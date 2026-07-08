@@ -417,7 +417,7 @@
 async function generatePDFReport() {
     const startDate = document.getElementById('report-start').value;
     const endDate = document.getElementById('report-end').value;
-    if (!startDate || !endDate) { alert("Por favor, seleccioná las fechas."); return; }
+    if (!startDate || !endDate) { alert("Seleccioná las fechas, porfa."); return; }
 
     const { data, error } = await supabaseClient
         .from('sales')
@@ -426,68 +426,71 @@ async function generatePDFReport() {
         .lte('date', endDate)
         .order('date', { ascending: true });
 
-    if (error || !data || data.length === 0) { alert("No hay ventas para este periodo."); return; }
+    if (error || !data || data.length === 0) { alert("No hay ventas en este rango."); return; }
 
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     
-    // Colores de tu marca
-    const primaryColor = [181, 124, 128]; // #B57C80
+    // Configuración de colores
+    const primaryColor = [181, 124, 128]; // Rosa Viejo
+    const lightGray = [245, 245, 245];
     const textColor = [60, 60, 60];
 
-    // 1. Encabezado
+    // --- 1. Encabezado ---
     doc.setFillColor(...primaryColor);
-    doc.rect(0, 0, 210, 35, 'F');
+    doc.rect(0, 0, 210, 30, 'F');
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(22);
-    doc.text("Reporte de Ventas", 105, 18, { align: "center" });
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(20);
+    doc.text("IDEAStore", 20, 18);
     doc.setFontSize(10);
-    doc.text(`IDEAStore | Generado el: ${new Date().toLocaleDateString()}`, 105, 27, { align: "center" });
+    doc.setFont("helvetica", "normal");
+    doc.text(`Reporte de ventas del ${startDate} al ${endDate}`, 20, 25);
+
+    // --- 2. Tabla ---
+    let y = 45;
     
-    // 2. Info de fechas
-    doc.setTextColor(...textColor);
-    doc.setFontSize(11);
-    doc.text(`Periodo seleccionado: ${startDate} al ${endDate}`, 20, 45);
-    
-    // 3. Encabezados de tabla
-    let y = 55;
-    doc.setFillColor(248, 248, 248);
+    // Encabezado de la tabla
+    doc.setFillColor(...primaryColor);
     doc.rect(15, y, 180, 10, 'F');
-    doc.setTextColor(...primaryColor);
-    doc.setFontSize(12);
+    doc.setTextColor(255, 255, 255);
+    doc.setFont("helvetica", "bold");
     doc.text("Producto", 20, y + 7);
-    doc.text("Cant.", 100, y + 7);
-    doc.text("Total", 160, y + 7);
+    doc.text("Fecha", 100, y + 7);
+    doc.text("Precio (Gs.)", 160, y + 7);
     
-    // 4. Filas de datos
     y += 15;
     let grandTotal = 0;
-    doc.setTextColor(...textColor);
-    doc.setFontSize(10);
     
-    data.forEach(s => {
-        if (y > 270) { doc.addPage(); y = 20; }
+    // Filas
+    doc.setFont("helvetica", "normal");
+    data.forEach((s, index) => {
+        // Zebra stripes (color alterno)
+        if (index % 2 === 0) {
+            doc.setFillColor(...lightGray);
+            doc.rect(15, y - 6, 180, 8, 'F');
+        }
+        
+        doc.setTextColor(...textColor);
         doc.text(s.name, 20, y);
-        doc.text((s.quantity || 1).toString(), 105, y);
-        doc.text(`Gs. ${s.price.toLocaleString('es-PY')}`, 160, y);
+        doc.text(s.date, 100, y);
+        doc.text(s.price.toLocaleString('es-PY'), 160, y);
         
         grandTotal += s.price;
         y += 8;
-        // Línea divisoria suave
-        doc.setDrawColor(230, 230, 230);
-        doc.line(15, y - 2, 195, y - 2);
     });
-    
-    // 5. Total General
+
+    // --- 3. Total Final ---
+    y += 5;
+    doc.setDrawColor(...primaryColor);
+    doc.line(120, y, 195, y); // Línea sobre el total
     y += 10;
-    doc.setFillColor(240, 240, 240);
-    doc.rect(15, y - 7, 180, 12, 'F');
-    doc.setFontSize(14);
-    doc.setTextColor(0, 0, 0);
-    doc.text("TOTAL GENERAL:", 110, y);
+    doc.setFont("helvetica", "bold");
     doc.setTextColor(...primaryColor);
+    doc.text("TOTAL:", 130, y);
     doc.text(`Gs. ${grandTotal.toLocaleString('es-PY')}`, 160, y);
-    
+
+    // Guardar
     doc.save(`Reporte_${startDate}_${endDate}.pdf`);
 }
 
