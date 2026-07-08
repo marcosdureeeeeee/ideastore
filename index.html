@@ -229,6 +229,7 @@
     </div>
 
     <script>
+                let sortOrder = 'desc';
         // CONFIGURACIÓN DE SUPABASE
         const SUPABASE_URL = "https://ivhkxgxixdshhzxxhhur.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_zSnb4yNKXCo1ZBZ-38vIvw_pEib7vGS";
@@ -242,7 +243,7 @@
         ];
 
         let salesList = [];
-        let sortOrder = 'desc';
+
         function getLocalDateString() {
             const now = new Date();
             const year = now.getFullYear();
@@ -324,7 +325,51 @@
             const options = { year: 'numeric', month: 'short', day: 'numeric' };
             return new Date(dateString + 'T00:00:00').toLocaleDateString('es-ES', options);
         }
+function renderSales() {
+    // A) ORDENAMIENTO INTERACTIVO: Ordena la lista antes de meterla al HTML
+    salesList.sort((a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        // Si es desc resta B - A (nuevo arriba), si es asc resta A - B (viejo arriba)
+        return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
+    });
 
+    // B) CAPTURA DEL TBODY: Asegurate de que el ID coincida con tu HTML
+    const tbody = document.getElementById('sales-tbody'); 
+    if (!tbody) return;
+    
+    tbody.innerHTML = ''; // Limpiamos el contenido viejo del contenedor
+
+    // C) CONSTRUCCIÓN DE FILAS: Inyectamos los 5 bloques alineados con las cabeceras
+    salesList.forEach(sale => {
+        const row = `
+            <tr class="hover:bg-gray-50 transition-colors">
+                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                    ${sale.name}
+                </td>
+                
+                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm font-semibold text-gray-700">
+                    ${sale.quantity || 1}
+                </td>
+                
+                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm font-bold text-gray-900">
+                    Gs. ${sale.price.toLocaleString('es-PY')}
+                </td>
+                
+                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm text-gray-600">
+                    ${formatDate(sale.date)}
+                </td>
+                
+                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm text-center">
+                    <button onclick="deleteSale('${sale.id}')" class="text-gray-400 hover:text-red-500 transition-colors">
+                        🗑️
+                    </button>
+                </td>
+            </tr>
+        `;
+        tbody.insertAdjacentHTML('beforeend', row);
+    });
+}
         // Autocompletado inteligente
         function setupAutocomplete() {
             const input = document.getElementById('product-name');
@@ -662,6 +707,24 @@ if ('serviceWorker' in navigator) {
             .catch(err => console.error('Error al registrar el Service Worker:', err));
     });
 }
+        document.addEventListener('DOMContentLoaded', () => {
+    const btnSort = document.getElementById('btn-sort-date');
+    if (btnSort) {
+        btnSort.addEventListener('click', () => {
+            // Alternamos el estado global de ordenamiento
+            sortOrder = sortOrder === 'desc' ? 'asc' : 'desc';
+            
+            // Cambiamos el indicador visual del emoticón en la interfaz
+            const sortIcon = document.getElementById('sort-icon');
+            if (sortIcon) {
+                sortIcon.innerText = sortOrder === 'desc' ? '🔽' : '🔼';
+            }
+            
+            // Re-renderizamos la tabla al instante sin volver a llamar a la base de datos
+            renderSales(); 
+        });
+    }
+});
     </script>
 </body>
 </html>
