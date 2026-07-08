@@ -488,9 +488,7 @@
         }
 
         // GENERAR REPORTE PDF FILTRADO
-     async function generatePDFReport() {
-    console.log("Iniciando generación de PDF..."); // 🔍 Para ver si arranca
-    
+async function generatePDFReport() {
     const startDate = document.getElementById('report-start').value;
     const endDate = document.getElementById('report-end').value;
 
@@ -499,7 +497,6 @@
         return;
     }
 
-    // 1. Traer datos
     const { data, error } = await supabaseClient
         .from('sales')
         .select('*')
@@ -507,57 +504,58 @@
         .lte('date', endDate)
         .order('date', { ascending: true });
 
-    if (error) {
-        console.error("Error Supabase:", error);
+    if (error || !data || data.length === 0) {
+        alert("No hay ventas para este rango.");
         return;
     }
 
-    if (!data || data.length === 0) {
-        alert("No hay ventas en ese rango.");
-        return;
-    }
-
-    // 2. Crear el contenedor temporal
+    // 1. Crear el contenedor
     const element = document.createElement('div');
+    element.id = "pdf-content";
     element.style.padding = "20px";
+    element.style.position = "absolute"; // Lo sacamos del flujo normal
+    element.style.left = "-9999px";      // Lo escondemos fuera de la pantalla
     element.innerHTML = `
-        <h1 style="color: #8C5256;">Reporte de Ventas IDEAStore</h1>
-        <table style="width: 100%; border-collapse: collapse;">
+        <h1 style="color: #8C5256; font-family: sans-serif;">Reporte de Ventas IDEAStore</h1>
+        <table style="width: 100%; border-collapse: collapse; font-family: sans-serif;">
             <thead>
-                <tr style="background: #eee;"><th>Producto</th><th>Fecha</th><th>Precio</th></tr>
+                <tr style="background: #eee;">
+                    <th style="padding: 8px; border: 1px solid #ccc;">Producto</th>
+                    <th style="padding: 8px; border: 1px solid #ccc;">Fecha</th>
+                    <th style="padding: 8px; border: 1px solid #ccc;">Precio</th>
+                </tr>
             </thead>
             <tbody>
                 ${data.map(s => `
                     <tr>
-                        <td style="border-bottom: 1px solid #ccc; padding: 8px;">${s.name}</td>
-                        <td style="border-bottom: 1px solid #ccc; padding: 8px;">${s.date}</td>
-                        <td style="border-bottom: 1px solid #ccc; padding: 8px;">Gs. ${s.price.toLocaleString('es-PY')}</td>
+                        <td style="border: 1px solid #ccc; padding: 8px;">${s.name}</td>
+                        <td style="border: 1px solid #ccc; padding: 8px;">${s.date}</td>
+                        <td style="border: 1px solid #ccc; padding: 8px;">Gs. ${s.price.toLocaleString('es-PY')}</td>
                     </tr>
                 `).join('')}
             </tbody>
         </table>
     `;
+    
+    // 2. Lo inyectamos al body
+    document.body.appendChild(element);
 
-    // 3. Ejecutar descarga
+    // 3. Generar
     try {
-        console.log("Intentando generar PDF con html2pdf...");
-        
-        // Verificamos si la librería cargó
-        if (typeof html2pdf === 'undefined') {
-            alert("¡Error! La librería de PDF no cargó. Revisá tu conexión o el script en el HEAD.");
-            return;
-        }
-
-        await html2pdf().from(element).set({
-            filename: 'Reporte_Ventas.pdf',
+        const opt = {
+            margin: 10,
+            filename: `Reporte_${startDate}_${endDate}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { scale: 2 },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        }).save();
-        
-        console.log("PDF generado correctamente.");
+        };
+
+        await html2pdf().set(opt).from(element).save();
     } catch (err) {
-        console.error("Error crítico en PDF:", err);
-        alert("Hubo un error al generar el PDF. Mirá la consola (F12).");
+        console.error("Error:", err);
+    } finally {
+        // 4. Limpieza: eliminamos el elemento después de generar
+        document.body.removeChild(element);
     }
 }
 
@@ -565,7 +563,7 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('¡Service Worker activado con éxito, kp!', reg))
+                    .then(reg => console.log('¡Service Worker activado con éxito!', reg))
                     .catch(err => console.error('Error al registrar el Service Worker:', err));
             });
         }
