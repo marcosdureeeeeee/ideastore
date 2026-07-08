@@ -10,10 +10,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700&display=swap" rel="stylesheet">
     <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#B57C80">
-<link rel="apple-touch-icon" href="icon-192.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="#B57C80">
+    <meta name="theme-color" content="#B57C80">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#B57C80">
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
@@ -85,41 +85,38 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
             <div class="lg:col-span-1 space-y-6">
-                
                 <div class="bg-white p-6 rounded-2xl shadow-xs border border-pink-100">
                     <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
                         📦 Cargar Producto
                     </h2>
                     
-                    <form id="sales-form" class="space-y-4" autocomplete="off">
-<div class="mb-4">
-    <label for="product-name-v2" class="block text-sm font-medium text-gray-700 mb-1">NOMBRE DEL PRODUCTO</label>
-    <input type="text" id="product-name-v2" name="product-name-v2" placeholder="Ej: Lápiz, Cuaderno..." required
-        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500">
-</div>
-                            <div class="mb-4">
-                                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Cantidad</label>
-                                    <input type="number" id="product-quantity" value="1" min="1" required
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500">
-                            </div>
+                    <form id="sales-form" class="space-y-4">
+                        <div class="mb-4">
+                            <label for="product-name-v2" class="block text-sm font-medium text-gray-700 mb-1">NOMBRE DEL PRODUCTO</label>
+                            <input type="text" id="product-name-v2" name="product-name-v2" placeholder="Ej: Lápiz, Cuaderno..." required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Cantidad</label>
+                            <input type="number" id="product-quantity" value="1" min="1" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500">
+                        </div>
                         <div>
-                            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Precio (Gs.)</label>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Precio Unitario (Gs.)</label>
                             <div class="relative">
                                 <span class="absolute left-4 top-2.5 text-gray-400 text-sm">Gs.</span>
                                 <input type="number" id="product-price" required min="0" step="50" placeholder="0" 
                                     class="w-full pl-12 pr-4 py-2.5 rounded-xl border border-gray-200 outline-none focus:border-[#B57C80] focus:ring-2 focus:ring-[#E2C2C4] transition-all text-sm">
                             </div>
                         </div>
-
                         <div>
                             <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Fecha de Venta</label>
                             <input type="date" id="product-date" required
                                 class="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none focus:border-[#B57C80] focus:ring-2 focus:ring-[#E2C2C4] transition-all text-sm text-gray-600">
                         </div>
-
                         <button type="submit" 
                             class="w-full bg-rosa-viejo text-white font-medium py-3 rounded-xl hover:bg-[#8C5256] transition-colors cursor-pointer shadow-xs text-sm mt-2">
-                    		➕ Registrar Venta
+                            ➕ Registrar Venta
                         </button>
                     </form>
                 </div>
@@ -128,16 +125,14 @@
                     <h2 class="text-lg font-bold text-gray-800 mb-2 flex items-center gap-2">
                         🖨️ Acceso Rápido
                     </h2>
-                    
                     <div class="space-y-3">
-                          <button onclick="quickPrint('Fotocopia', 500)" class="w-full text-left px-4 py-3 rounded-xl border border-dashed border-gray-200 hover:border-[#B57C80] hover:bg-rosa-viejo-soft transition-all flex justify-between items-center group cursor-pointer">
+                        <button onclick="quickPrint('Fotocopias', 500)" class="w-full text-left px-4 py-3 rounded-xl border border-dashed border-gray-200 hover:border-[#B57C80] hover:bg-rosa-viejo-soft transition-all flex justify-between items-center group cursor-pointer">
                             <div>
                                 <p class="text-sm font-medium text-gray-700 group-hover:text-rosa-viejo">📄 Fotocopias Estándar</p>
                                 <p class="text-xs text-gray-400">Estándar Hojas A4 / Oficio</p>
                             </div>
                             <span class="text-sm font-semibold text-gray-500 bg-gray-50 px-2 py-1 rounded-lg group-hover:bg-white group-hover:text-rosa-viejo">Gs. 500</span>
                         </button>
-
                         <button onclick="quickPrint('Impresión Blanco y Negro', 1500)" class="w-full text-left px-4 py-3 rounded-xl border border-dashed border-gray-200 hover:border-[#B57C80] hover:bg-rosa-viejo-soft transition-all flex justify-between items-center group cursor-pointer">
                             <div>
                                 <p class="text-sm font-medium text-gray-700 group-hover:text-rosa-viejo">🔲 Blanco y Negro</p>
@@ -145,7 +140,6 @@
                             </div>
                             <span class="text-sm font-semibold text-gray-500 bg-gray-50 px-2 py-1 rounded-lg group-hover:bg-white group-hover:text-rosa-viejo">Gs. 1500</span>
                         </button>
-
                         <button onclick="quickPrint('Impresión a Color', 3000)" class="w-full text-left px-4 py-3 rounded-xl border border-dashed border-gray-200 hover:border-[#B57C80] hover:bg-rosa-viejo-soft transition-all flex justify-between items-center group cursor-pointer">
                             <div>
                                 <p class="text-sm font-medium text-gray-700 group-hover:text-rosa-viejo">🎨 Color</p>
@@ -161,7 +155,6 @@
                         📊 Reportes y Cierre
                     </h2>
                     <p class="text-xs text-gray-400 mb-4">Descargar resumen de ventas en PDF</p>
-                    
                     <div class="space-y-3">
                         <div>
                             <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Desde:</label>
@@ -176,11 +169,9 @@
                         </button>
                     </div>
                 </div>
-
             </div>
 
             <div class="lg:col-span-2 space-y-6">
-                
                 <div class="bg-rosa-viejo text-white p-6 rounded-2xl shadow-sm relative overflow-hidden">
                     <div class="absolute right-0 bottom-0 opacity-10 translate-x-4 translate-y-4">
                         <svg width="200" height="200" fill="currentColor" viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
@@ -200,49 +191,40 @@
                     
                     <div class="overflow-x-auto max-h-[550px]">
                         <table class="w-full text-left border-collapse">
-<thead>
-    <tr class="bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-        <th class="px-5 py-3">Producto</th>
-        <th class="px-5 py-3">Cantidad</th> <th class="px-5 py-3">Precio Total</th>
-        <th class="px-5 py-3">
-            <div class="flex items-center gap-1">
-                <span>Fecha</span>
-                <button id="btn-sort-date" type="button" class="focus:outline-none hover:text-pink-500 text-sm p-1">
-                    🔽
-                </button>
-            </div>
-        </th>
-    </tr>
-</thead>
+                            <thead>
+                                <tr class="bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                    <th class="px-5 py-3">Producto</th>
+                                    <th class="px-5 py-3">Cantidad</th> 
+                                    <th class="px-5 py-3">Precio Total</th>
+                                    <th class="px-5 py-3">
+                                        <div class="flex items-center gap-1 cursor-pointer hover:text-pink-500 inline-flex" id="btn-sort-date">
+                                            <span>Fecha</span>
+                                            <span id="sort-icon">🔽</span>
+                                        </div>
+                                    </th>
+                                    <th class="px-5 py-3"></th> </tr>
+                            </thead>
                             <tbody id="sales-tbody" class="divide-y divide-gray-100 text-sm">
-                                </tbody>
+                            </tbody>
                         </table>
                         <div id="no-sales-message" class="p-8 text-center text-gray-400 hidden">
                             Aún no hay ventas registradas en el sistema.
                         </div>
                     </div>
                 </div>
-
             </div>
-
         </div>
     </div>
 
     <script>
-                let sortOrder = 'desc';
+        // GLOBALES
+        let sortOrder = 'desc';
+        let salesList = [];
+
         // CONFIGURACIÓN DE SUPABASE
         const SUPABASE_URL = "https://ivhkxgxixdshhzxxhhur.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_zSnb4yNKXCo1ZBZ-38vIvw_pEib7vGS";
-        
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        const defaultSuggestions = [
-            "Lápiz de papel HB", "Lápiz de color Faber-Castell", "Lapicera Azul Bic", "Lapicera Negra Bic",
-            "Impresión Blanco y Negro A4", "Impresión Color A4", "Cuaderno Universitario 84 hojas", 
-            "Goma de borrar", "Regla de 30cm", "Plasticola chica", "Cartulina escolar"
-        ];
-
-        let salesList = [];
 
         function getLocalDateString() {
             const now = new Date();
@@ -256,7 +238,6 @@
         window.addEventListener('DOMContentLoaded', () => {
             const isAuth = localStorage.getItem('ideastore_authenticated');
             if (isAuth === 'true') {
-                // Si ya estaba autenticada, saltamos directo a la app
                 document.getElementById('login-container').classList.add('hidden');
                 document.getElementById('app-container').classList.remove('hidden');
                 initApp();
@@ -269,13 +250,10 @@
             const user = document.getElementById('login-user').value.trim();
             const pass = document.getElementById('login-pass').value.trim();
             const errorMsg = document.getElementById('login-error');
-
+            
             if (user === 'Raquel' && pass === '615065') {
                 errorMsg.classList.add('hidden');
-                
-                // SUPERPODER: Guardamos la sesión en el navegador
                 localStorage.setItem('ideastore_authenticated', 'true');
-                
                 document.getElementById('login-container').classList.add('hidden');
                 document.getElementById('app-container').classList.remove('hidden');
                 initApp();
@@ -285,9 +263,7 @@
         }
 
         function handleLogout() {
-            // Borramos la sesión de la memoria al salir a propósito
             localStorage.removeItem('ideastore_authenticated');
-            
             document.getElementById('app-container').classList.add('hidden');
             document.getElementById('login-container').classList.remove('hidden');
             document.getElementById('login-pass').value = '';
@@ -302,7 +278,6 @@
             document.getElementById('current-date-badge').innerText = formatDate(todayStr);
             
             await fetchSales();
-            setupAutocomplete();
         }
 
         // Leer datos desde Supabase
@@ -311,7 +286,7 @@
                 .from('sales')
                 .select('*')
                 .order('created_at', { ascending: false });
-
+                
             if (error) {
                 console.error("Error leyendo datos de la nube:", error);
                 alert("Hubo un problema al cargar los datos desde la nube.");
@@ -325,189 +300,138 @@
             const options = { year: 'numeric', month: 'short', day: 'numeric' };
             return new Date(dateString + 'T00:00:00').toLocaleDateString('es-ES', options);
         }
-function renderSales() {
-    // A) ORDENAMIENTO INTERACTIVO: Ordena la lista antes de meterla al HTML
-    salesList.sort((a, b) => {
-        const dateA = new Date(a.date);
-        const dateB = new Date(b.date);
-        // Si es desc resta B - A (nuevo arriba), si es asc resta A - B (viejo arriba)
-        return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
-    });
 
-    // B) CAPTURA DEL TBODY: Asegurate de que el ID coincida con tu HTML
-    const tableBody = document.getElementById('sales-tbody'); 
-    if (!tableBody) return;
-    
-    tableBody.innerHTML = ''; // Limpiamos el contenido viejo del contenedor
+        // FUNCIÓN ÚNICA Y DEFINITIVA PARA DIBUJAR LA TABLA Y CALCULAR TOTALES
+        function renderSales() {
+            const tableBody = document.getElementById('sales-tbody');
+            const noSalesMsg = document.getElementById('no-sales-message');
+            const totalSalesEl = document.getElementById('total-sales');
+            const totalCountEl = document.getElementById('total-count');
 
-    // C) CONSTRUCCIÓN DE FILAS: Inyectamos los 5 bloques alineados con las cabeceras
-    salesList.forEach(sale => {
-        const row = `
-            <tr class="hover:bg-gray-50 transition-colors">
-                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    ${sale.name}
-                </td>
-                
-                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm font-semibold text-gray-700">
-                    ${sale.quantity || 1}
-                </td>
-                
-                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm font-bold text-gray-900">
-                    Gs. ${sale.price.toLocaleString('es-PY')}
-                </td>
-                
-                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm text-gray-600">
-                    ${formatDate(sale.date)}
-                </td>
-                
-                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm text-center">
-                    <button onclick="deleteSale('${sale.id}')" class="text-gray-400 hover:text-red-500 transition-colors">
-                        🗑️
-                    </button>
-                </td>
-            </tr>
-        `;
-        tableBody.insertAdjacentHTML('beforeend', row);
-    });
-}
-        // Autocompletado inteligente
-        function setupAutocomplete() {
-            const input = document.getElementById('product-name-v2');
-            const box = document.getElementById('suggestions-box');
+            if (!tableBody) return;
 
-            input.addEventListener('input', (e) => {
-                const query = e.target.value.toLowerCase().trim();
-                box.innerHTML = '';
+            // 1. ORDENAMOS LA LISTA
+            salesList.sort((a, b) => {
+                const dateA = new Date(a.date);
+                const dateB = new Date(b.date);
+                return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
+            });
+
+            // 2. LIMPIAMOS LA TABLA
+            tableBody.innerHTML = ''; 
+            
+            let totalSum = 0;
+            let salesCount = 0;
+            const todayStr = getLocalDateString();
+
+            if (salesList.length === 0) {
+                noSalesMsg.classList.remove('hidden');
+            } else {
+                noSalesMsg.classList.add('hidden');
                 
-                if (!query) {
-                    box.classList.add('hidden');
-                    return;
-                }
+                // 3. DIBUJAMOS LAS FILAS Y CALCULAMOS EL TOTAL DEL DÍA
+                salesList.forEach(sale => {
+                    const cantidadReal = sale.quantity || 1;
+                    
+                    if(sale.date === todayStr) {
+                        totalSum += sale.price;
+                        salesCount += cantidadReal; // Suma la cantidad real vendida
+                    }
 
-                const allProducts = [...new Set([...salesList.map(s => s.name), ...defaultSuggestions])];
-                const filtered = allProducts.filter(item => item.toLowerCase().includes(query));
+                    const row = `
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">${sale.name}</td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm font-semibold text-gray-700">${cantidadReal}</td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm font-bold text-gray-900">Gs. ${sale.price.toLocaleString('es-PY')}</td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm text-gray-600">${formatDate(sale.date)}</td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm text-center">
+                                <button onclick="deleteSale('${sale.id}')" class="text-gray-400 hover:text-red-500 transition-colors cursor-pointer">🗑️</button>
+                            </td>
+                        </tr>
+                    `;
+                    tableBody.insertAdjacentHTML('beforeend', row);
+                });
+            }
 
-                if (filtered.length > 0) {
-                    filtered.forEach(item => {
-                        const div = document.createElement('div');
-                        div.className = 'px-4 py-2 hover:bg-rosa-viejo-soft text-sm text-gray-700 cursor-pointer transition-colors';
-                        div.innerText = item;
-                        div.onclick = () => {
-                            input.value = item;
-                            box.classList.add('hidden');
-                            document.getElementById('product-price').focus();
-                        };
-                        box.appendChild(div);
-                    });
-                    box.classList.remove('hidden');
+            // 4. ACTUALIZAMOS LOS CARTELES DE RECAUDACIÓN
+            totalSalesEl.innerText = `Gs. ${totalSum.toLocaleString('es-PY')}`;
+            totalCountEl.innerText = `${salesCount} producto(s) vendido(s) hoy`;
+        }
+
+        // Registrar venta desde el formulario
+        document.getElementById('sales-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('product-name-v2').value;
+            const unitPrice = Math.round(parseFloat(document.getElementById('product-price').value));
+            const quantity = parseInt(document.getElementById('product-quantity').value) || 1;
+            const date = document.getElementById('product-date').value;
+
+            const totalPrice = unitPrice * quantity;
+
+            await addSale(name, totalPrice, quantity, date);
+            
+            document.getElementById('product-name-v2').value = '';
+            document.getElementById('product-price').value = '';
+            document.getElementById('product-quantity').value = '1';
+        });
+
+        // Registrar venta con soporte Offline (AHORA RECIBE QUANTITY)
+        async function addSale(name, price, quantity, date) {
+            const nuevaVenta = { name: name, price: price, quantity: quantity, date: date };
+            
+            if (navigator.onLine) {
+                const { error } = await supabaseClient
+                    .from('sales')
+                    .insert([nuevaVenta]);
+                    
+                if (error) {
+                    console.error("Error al guardar:", error);
+                    alert("No se pudo guardar la venta en internet. Guardando localmente...");
+                    guardarEnColaOffline(nuevaVenta);
                 } else {
-                    box.classList.add('hidden');
+                    await fetchSales();
                 }
-            });
-
-            document.addEventListener('click', (e) => {
-                if (e.target !== input && e.target !== box) {
-                    box.classList.add('hidden');
-                }
-            });
+            } else {
+                guardarEnColaOffline(nuevaVenta);
+                alert("⚠️ Sin internet. La venta se guardó de forma segura en la compu/celu y se subirá sola cuando vuelva la conexión. 😉");
+            }
         }
 
-      
-// Registrar venta 
-
-document.getElementById('sales-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    // : Agarramos el valor con el nuevo ID
-    const name = document.getElementById('product-name-v2').value;
-    const unitPrice = Math.round(parseFloat(document.getElementById('product-price').value));
-    const quantity = parseInt(document.getElementById('product-quantity').value) || 1;
-    const date = document.getElementById('product-date').value;
-
-    const totalPrice = unitPrice * quantity;
-
-    await addSale(name, totalPrice, quantity, date);
-    
-    //  Limpiamos el campo con el nuevo ID
-    document.getElementById('product-name-v2').value = '';
-    document.getElementById('product-price').value = '';
-    document.getElementById('product-quantity').value = '1';
-});
-    
-
-       // MODIFICACIÓN: Registrar venta con soporte Offline
-async function addSale(name, price, date) {
-    const nuevaVenta = { name: name, price: price, date: date };
-
-    // ¿Tenemos internet en este momento?
-    if (navigator.onLine) {
-        // SI HAY INTERNET: Se envía directo a Supabase como siempre
-        const { error } = await supabaseClient
-            .from('sales')
-            .insert([nuevaVenta]);
-
-        if (error) {
-            console.error("Error al guardar:", error);
-            alert("No se pudo guardar la venta en internet. Guardando localmente...");
-            guardarEnColaOffline(nuevaVenta);
-        } else {
-            await fetchSales();
+        function guardarEnColaOffline(venta) {
+            let cola = JSON.parse(localStorage.getItem('ideastore_cola_offline')) || [];
+            cola.push(venta);
+            localStorage.setItem('ideastore_cola_offline', JSON.stringify(cola));
         }
-    } else {
-        // NO HAY INTERNET: Avisamos a Raquel y guardamos en la memoria local
-        guardarEnColaOffline(nuevaVenta);
-        alert("⚠️ Sin internet. La venta se guardó de forma segura en la compu/celu y se subirá sola cuando vuelva la conexión. 😉");
-    }
-}
 
-// NUEVA FUNCIÓN: Guarda las ventas pendientes en una lista de espera local
-function guardarEnColaOffline(venta) {
-    let cola = JSON.parse(localStorage.getItem('ideastore_cola_offline')) || [];
-    cola.push(venta);
-    localStorage.setItem('ideastore_cola_offline', JSON.stringify(cola));
-    
-    // Opcional: Actualizamos la interfaz local para que Raquel vea que hay cosas pendientes
-    console.log("Venta guardada en la cola offline:", venta);
-}
+        async function sincronizarVentasPendientes() {
+            let cola = JSON.parse(localStorage.getItem('ideastore_cola_offline')) || [];
+            
+            if (cola.length === 0) return;
 
-// NUEVA FUNCIÓN: Sincroniza las ventas pendientes con Supabase
-async function sincronizarVentasPendientes() {
-    let cola = JSON.parse(localStorage.getItem('ideastore_cola_offline')) || [];
-    
-    if (cola.length === 0) return; // Si no hay nada pendiente, no hacemos nada
+            const { error } = await supabaseClient
+                .from('sales')
+                .insert(cola);
+                
+            if (!error) {
+                localStorage.removeItem('ideastore_cola_offline');
+                await fetchSales();
+                alert("🎉 ¡Se recuperó el internet y las ventas pendientes se sincronizaron con éxito en la nube!");
+            } else {
+                console.error("Error al intentar sincronizar la cola:", error);
+            }
+        }
 
-    console.log(`📡 ¡Conexión recuperada! Sincronizando ${cola.length} ventas pendientes...`);
-
-    // Intentamos subir toda la lista junta a Supabase
-    const { error } = await supabaseClient
-        .from('sales')
-        .insert(cola);
-
-    if (!error) {
-        console.log("✅ ¡Sincronización exitosa con la base de datos!");
-        // Como ya se subieron con éxito, limpiamos la cola offline
-        localStorage.removeItem('ideastore_cola_offline');
-        // Refrescamos la tabla para ver las nuevas ventas
-        await fetchSales();
-        alert("🎉 ¡Se recuperó el internet y las ventas pendientes se sincronizaron con éxito en la nube!");
-    } else {
-        console.error("Error al intentar sincronizar la cola:", error);
-    }
-}
-
-// ESCUCHADORES AUTOMÁTICOS: Detectan cuando el internet va y viene
-window.addEventListener('online', sincronizarVentasPendientes);
-
-window.addEventListener('offline', () => {
-    console.log("⚠️ Te quedaste sin conexión a internet.");
-});
+        window.addEventListener('online', sincronizarVentasPendientes);
+        window.addEventListener('offline', () => {
+            console.log("⚠️ Te quedaste sin conexión a internet.");
+        });
 
         // Carga rápida de impresiones
         async function quickPrint(type, defaultPrice) {
             const todayStr = getLocalDateString();
-            
             const priceInput = prompt(`Confirmar o cambiar el precio UNITARIO para "${type}" (Gs.):`, defaultPrice);
-            if (priceInput === null) return; 
+            if (priceInput === null) return;
             
             const price = parseFloat(priceInput);
             if (isNaN(price) || price < 0) {
@@ -525,18 +449,18 @@ window.addEventListener('offline', () => {
             }
 
             const totalCalculated = Math.round(price * qty);
-            const dynamicName = `${type} (x${qty})`;
-
-            await addSale(dynamicName, totalCalculated, todayStr);
+            
+            // Mandamos a guardar con la cantidad correcta
+            await addSale(type, totalCalculated, qty, todayStr);
         }
 
-        // Eliminar venta individual
+        // Eliminar venta
         async function deleteSale(id) {
             const { error } = await supabaseClient
                 .from('sales')
                 .delete()
                 .eq('id', id);
-
+                
             if (error) {
                 console.error("Error al borrar:", error);
                 alert("No se pudo eliminar el registro de la nube.");
@@ -552,7 +476,7 @@ window.addEventListener('offline', () => {
                     .from('sales')
                     .delete()
                     .neq('id', 0);
-
+                    
                 if (error) {
                     console.error("Error al vaciar:", error);
                     alert("No se pudo limpiar la base de datos.");
@@ -560,50 +484,6 @@ window.addEventListener('offline', () => {
                     await fetchSales();
                 }
             }
-        }
-
-        // Renderizar en interfaz con formato local guaraní
-        function renderSales() {
-            const tableBody = document.getElementById('sales-table-body');
-            const noSalesMsg = document.getElementById('no-sales-message');
-            const totalSalesEl = document.getElementById('total-sales');
-            const totalCountEl = document.getElementById('total-count');
-
-            tableBody.innerHTML = '';
-            
-            let totalSum = 0;
-            let salesCount = 0;
-            const todayStr = getLocalDateString();
-
-            if (salesList.length === 0) {
-                noSalesMsg.classList.remove('hidden');
-            } else {
-                noSalesMsg.classList.add('hidden');
-                
-                salesList.forEach(sale => {
-                    if(sale.date === todayStr) {
-                        totalSum += sale.price;
-                        salesCount++;
-                    }
-
-                    const tr = document.createElement('tr');
-                    tr.className = 'hover:bg-gray-50 transition-colors';
-                    tr.innerHTML = `
-                        <td class="px-6 py-4 font-medium text-gray-800">${sale.name}</td>
-                        <td class="px-6 py-4 text-gray-400 text-xs">${formatDate(sale.date)}</td>
-                        <td class="px-6 py-4 text-right font-semibold text-gray-700">Gs. ${sale.price.toLocaleString('es-PY')}</td>
-                        <td class="px-6 py-4 text-center">
-                            <button onclick="deleteSale(${sale.id})" class="text-red-400 hover:text-red-600 transition-colors cursor-pointer">
-                                🗑️
-                            </button>
-                        </td>
-                    `;
-                    tableBody.appendChild(tr);
-                });
-            }
-
-            totalSalesEl.innerText = `Gs. ${totalSum.toLocaleString('es-PY')}`;
-            totalCountEl.innerText = `${salesCount} producto(s) vendido(s) hoy`;
         }
 
         // GENERAR REPORTE PDF FILTRADO
@@ -639,9 +519,11 @@ window.addEventListener('offline', () => {
 
             data.forEach(sale => {
                 totalSum += sale.price;
+                const cantidadReporte = sale.quantity || 1;
+                
                 tableRowsHTML += `
                     <tr style="border-bottom: 1px solid #eee; font-size: 13px;">
-                        <td style="padding: 10px; color: #333;">${sale.name}</td>
+                        <td style="padding: 10px; color: #333;">${sale.name} (x${cantidadReporte})</td>
                         <td style="padding: 10px; color: #666;">${formatDate(sale.date)}</td>
                         <td style="padding: 10px; text-align: right; font-weight: 600; color: #333;">Gs. ${sale.price.toLocaleString('es-PY')}</td>
                     </tr>
@@ -699,32 +581,30 @@ window.addEventListener('offline', () => {
             `);
             printWindow.document.close();
         }
+
         // REGISTRO DEL SERVICE WORKER PARA PWA
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('¡Service Worker activado con éxito, kp!', reg))
-            .catch(err => console.error('Error al registrar el Service Worker:', err));
-    });
-}
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('¡Service Worker activado con éxito, kp!', reg))
+                    .catch(err => console.error('Error al registrar el Service Worker:', err));
+            });
+        }
+
+        // ORDENAMIENTO POR FECHA
         document.addEventListener('DOMContentLoaded', () => {
-    const btnSort = document.getElementById('btn-sort-date');
-    if (btnSort) {
-        btnSort.addEventListener('click', () => {
-            // Alternamos el estado global de ordenamiento
-            sortOrder = sortOrder === 'desc' ? 'asc' : 'desc';
-            
-            // Cambiamos el indicador visual del emoticón en la interfaz
-            const sortIcon = document.getElementById('sort-icon');
-            if (sortIcon) {
-                sortIcon.innerText = sortOrder === 'desc' ? '🔽' : '🔼';
+            const btnSort = document.getElementById('btn-sort-date');
+            if (btnSort) {
+                btnSort.addEventListener('click', () => {
+                    sortOrder = sortOrder === 'desc' ? 'asc' : 'desc';
+                    const sortIcon = document.getElementById('sort-icon');
+                    if (sortIcon) {
+                        sortIcon.innerText = sortOrder === 'desc' ? '🔽' : '🔼';
+                    }
+                    renderSales(); 
+                });
             }
-            
-            // Re-renderizamos la tabla al instante sin volver a llamar a la base de datos
-            renderSales(); 
         });
-    }
-});
     </script>
 </body>
 </html>
