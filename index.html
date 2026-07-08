@@ -431,12 +431,11 @@ async function generatePDFReport() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
-    // Paleta de colores minimalista (basada en tu app)
+    // Paleta de colores minimalista
     const primaryColor = [181, 124, 128]; // Rosa Viejo
     const darkGray = [70, 70, 70];
-    const lightGray = [150, 150, 150];
 
-    // --- Encabezado Limpio ---
+    // --- Encabezado ---
     doc.setTextColor(...primaryColor);
     doc.setFontSize(22);
     doc.setFont("helvetica", "bold");
@@ -445,21 +444,21 @@ async function generatePDFReport() {
     doc.setTextColor(...darkGray);
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
-    doc.text(`Reporte de Ventas: ${startDate} al ${endDate}`, 20, 28);
+    doc.text(`Reporte detallado: ${startDate} al ${endDate}`, 20, 28);
     
-    // Línea de separación sutil
     doc.setDrawColor(220, 220, 220);
     doc.line(20, 35, 190, 35);
 
-    // --- Tabla ---
+    // --- Tabla (Nueva estructura con Fecha) ---
     let y = 45;
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(...primaryColor);
     
-    // Encabezados
+    // Encabezados ajustados
     doc.text("PRODUCTO", 20, y);
-    doc.text("CANT.", 120, y);
+    doc.text("FECHA", 100, y);
+    doc.text("CANT.", 140, y);
     doc.text("TOTAL (Gs.)", 185, y, { align: 'right' });
     
     y += 5;
@@ -475,8 +474,9 @@ async function generatePDFReport() {
         if (y > 270) { doc.addPage(); y = 20; }
         
         doc.text(s.name, 20, y);
-        doc.text((s.quantity || 1).toString(), 125, y); // Alinear Cantidad
-        doc.text(s.price.toLocaleString('es-PY'), 185, y, { align: 'right' });
+        doc.text(s.date, 100, y); // Columna Fecha añadida
+        doc.text((s.quantity || 1).toString(), 145, y); // Columna Cantidad
+        doc.text(s.price.toLocaleString('es-PY'), 185, y, { align: 'right' }); // Columna Total
         
         grandTotal += s.price;
         y += 8;
