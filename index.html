@@ -335,10 +335,10 @@ function renderSales() {
     });
 
     // B) CAPTURA DEL TBODY: Asegurate de que el ID coincida con tu HTML
-    const tbody = document.getElementById('sales-tbody'); 
-    if (!tbody) return;
+    const tableBody = document.getElementById('sales-tbody'); 
+    if (!tableBody) return;
     
-    tbody.innerHTML = ''; // Limpiamos el contenido viejo del contenedor
+    tableBody.innerHTML = ''; // Limpiamos el contenido viejo del contenedor
 
     // C) CONSTRUCCIÓN DE FILAS: Inyectamos los 5 bloques alineados con las cabeceras
     salesList.forEach(sale => {
@@ -367,7 +367,7 @@ function renderSales() {
                 </td>
             </tr>
         `;
-        tbody.insertAdjacentHTML('beforeend', row);
+        tableBody.insertAdjacentHTML('beforeend', row);
     });
 }
         // Autocompletado inteligente
