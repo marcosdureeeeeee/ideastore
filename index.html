@@ -488,7 +488,9 @@
         }
 
         // GENERAR REPORTE PDF FILTRADO
-        async function generatePDFReport() {
+     async function generatePDFReport() {
+    console.log("Iniciando generación de PDF..."); // 🔍 Para ver si arranca
+    
     const startDate = document.getElementById('report-start').value;
     const endDate = document.getElementById('report-end').value;
 
@@ -497,6 +499,7 @@
         return;
     }
 
+    // 1. Traer datos
     const { data, error } = await supabaseClient
         .from('sales')
         .select('*')
@@ -504,54 +507,58 @@
         .lte('date', endDate)
         .order('date', { ascending: true });
 
-    if (error || !data || data.length === 0) {
-        alert("No hay ventas para este rango.");
+    if (error) {
+        console.error("Error Supabase:", error);
         return;
     }
 
-    let totalSum = 0;
-    let tableRowsHTML = data.map(sale => {
-        totalSum += sale.price;
-        return `
-            <tr>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${sale.name} (x${sale.quantity || 1})</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${formatDate(sale.date)}</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;">Gs. ${sale.price.toLocaleString('es-PY')}</td>
-            </tr>
-        `;
-    }).join('');
+    if (!data || data.length === 0) {
+        alert("No hay ventas en ese rango.");
+        return;
+    }
 
-    // Creamos un elemento temporal que NO se ve en pantalla pero que la librería va a convertir en PDF
+    // 2. Crear el contenedor temporal
     const element = document.createElement('div');
+    element.style.padding = "20px";
     element.innerHTML = `
-        <div style="font-family: sans-serif; padding: 20px;">
-            <h1 style="color: #8C5256; text-align: center;">Reporte IDEAStore</h1>
-            <p style="text-align: center;">Desde ${formatDate(startDate)} hasta ${formatDate(endDate)}</p>
-            <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-                <thead>
-                    <tr style="background: #f4f4f4;">
-                        <th style="padding: 10px; text-align: left;">Producto</th>
-                        <th style="padding: 10px; text-align: left;">Fecha</th>
-                        <th style="padding: 10px; text-align: right;">Precio</th>
+        <h1 style="color: #8C5256;">Reporte de Ventas IDEAStore</h1>
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: #eee;"><th>Producto</th><th>Fecha</th><th>Precio</th></tr>
+            </thead>
+            <tbody>
+                ${data.map(s => `
+                    <tr>
+                        <td style="border-bottom: 1px solid #ccc; padding: 8px;">${s.name}</td>
+                        <td style="border-bottom: 1px solid #ccc; padding: 8px;">${s.date}</td>
+                        <td style="border-bottom: 1px solid #ccc; padding: 8px;">Gs. ${s.price.toLocaleString('es-PY')}</td>
                     </tr>
-                </thead>
-                <tbody>${tableRowsHTML}</tbody>
-            </table>
-            <h2 style="text-align: right; margin-top: 20px;">Total: Gs. ${totalSum.toLocaleString('es-PY')}</h2>
-        </div>
+                `).join('')}
+            </tbody>
+        </table>
     `;
 
-    // Configuración de la descarga
-    const opt = {
-        margin:       10,
-        filename:     `Reporte_Ventas_${startDate}_al_${endDate}.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
+    // 3. Ejecutar descarga
+    try {
+        console.log("Intentando generar PDF con html2pdf...");
+        
+        // Verificamos si la librería cargó
+        if (typeof html2pdf === 'undefined') {
+            alert("¡Error! La librería de PDF no cargó. Revisá tu conexión o el script en el HEAD.");
+            return;
+        }
 
-    // ¡Aquí ocurre la magia de la descarga!
-    html2pdf().set(opt).from(element).save();
+        await html2pdf().from(element).set({
+            filename: 'Reporte_Ventas.pdf',
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        }).save();
+        
+        console.log("PDF generado correctamente.");
+    } catch (err) {
+        console.error("Error crítico en PDF:", err);
+        alert("Hubo un error al generar el PDF. Mirá la consola (F12).");
+    }
 }
 
         // REGISTRO DEL SERVICE WORKER PARA PWA
