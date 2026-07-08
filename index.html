@@ -510,27 +510,27 @@ async function generatePDFReport() {
     }
 
     // 1. Crear el contenedor
-    const element = document.createElement('div');
-    element.id = "pdf-content";
+   const element = document.createElement('div');
     element.style.padding = "20px";
-    element.style.position = "absolute"; // Lo sacamos del flujo normal
-    element.style.left = "-9999px";      // Lo escondemos fuera de la pantalla
+    element.style.backgroundColor = "#ffffff"; // Color sólido, sin oklch
+    element.style.fontFamily = "sans-serif";
+    
     element.innerHTML = `
-        <h1 style="color: #8C5256; font-family: sans-serif;">Reporte de Ventas IDEAStore</h1>
-        <table style="width: 100%; border-collapse: collapse; font-family: sans-serif;">
+        <h1 style="color: #8c5256; text-align: center;">Reporte de Ventas IDEAStore</h1>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
             <thead>
-                <tr style="background: #eee;">
-                    <th style="padding: 8px; border: 1px solid #ccc;">Producto</th>
-                    <th style="padding: 8px; border: 1px solid #ccc;">Fecha</th>
-                    <th style="padding: 8px; border: 1px solid #ccc;">Precio</th>
+                <tr style="background-color: #f3f4f6; color: #374151;">
+                    <th style="padding: 12px; border: 1px solid #e5e7eb; text-align: left;">Producto</th>
+                    <th style="padding: 12px; border: 1px solid #e5e7eb; text-align: left;">Fecha</th>
+                    <th style="padding: 12px; border: 1px solid #e5e7eb; text-align: right;">Precio</th>
                 </tr>
             </thead>
             <tbody>
                 ${data.map(s => `
                     <tr>
-                        <td style="border: 1px solid #ccc; padding: 8px;">${s.name}</td>
-                        <td style="border: 1px solid #ccc; padding: 8px;">${s.date}</td>
-                        <td style="border: 1px solid #ccc; padding: 8px;">Gs. ${s.price.toLocaleString('es-PY')}</td>
+                        <td style="padding: 10px; border: 1px solid #e5e7eb;">${s.name}</td>
+                        <td style="padding: 10px; border: 1px solid #e5e7eb;">${s.date}</td>
+                        <td style="padding: 10px; border: 1px solid #e5e7eb; text-align: right;">Gs. ${s.price.toLocaleString('es-PY')}</td>
                     </tr>
                 `).join('')}
             </tbody>
