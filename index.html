@@ -493,7 +493,7 @@ async function generatePDFReport() {
     const endDate = document.getElementById('report-end').value;
 
     if (!startDate || !endDate) {
-        alert("Seleccioná las fechas.");
+        alert("Por favor, seleccioná ambas fechas.");
         return;
     }
 
@@ -505,63 +505,53 @@ async function generatePDFReport() {
         .order('date', { ascending: true });
 
     if (error || !data || data.length === 0) {
-        alert("Sin ventas en este rango.");
+        alert("No hay ventas para este rango.");
         return;
     }
 
-    // 1. Creamos un iFrame oculto para aislar los estilos
-    const iframe = document.createElement('iframe');
-    iframe.style.position = 'absolute';
-    iframe.style.width = '0';
-    iframe.style.height = '0';
-    iframe.style.border = 'none';
-    document.body.appendChild(iframe);
+    let totalSum = 0;
+    let tableRowsHTML = data.map(sale => {
+        totalSum += sale.price;
+        return `
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${sale.name} (x${sale.quantity || 1})</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${formatDate(sale.date)}</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;">Gs. ${sale.price.toLocaleString('es-PY')}</td>
+            </tr>
+        `;
+    }).join('');
 
-    // 2. Construimos el HTML dentro del iFrame, sin ninguna referencia a CSS externo
-    const doc = iframe.contentDocument || iframe.contentWindow.document;
-    doc.write(`
-        <html>
-        <body style="font-family: sans-serif; padding: 20px;">
-            <h1 style="color: #8c5256; text-align: center;">Reporte de Ventas IDEAStore</h1>
-            <table style="width: 100%; border-collapse: collapse; border: 1px solid #000;">
+    // Creamos un elemento temporal que NO se ve en pantalla pero que la librería va a convertir en PDF
+    const element = document.createElement('div');
+    element.innerHTML = `
+        <div style="font-family: sans-serif; padding: 20px;">
+            <h1 style="color: #8C5256; text-align: center;">Reporte IDEAStore</h1>
+            <p style="text-align: center;">Desde ${formatDate(startDate)} hasta ${formatDate(endDate)}</p>
+            <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
                 <thead>
-                    <tr style="background-color: #eee;">
-                        <th style="border: 1px solid #000; padding: 8px;">Producto</th>
-                        <th style="border: 1px solid #000; padding: 8px;">Fecha</th>
-                        <th style="border: 1px solid #000; padding: 8px;">Precio</th>
+                    <tr style="background: #f4f4f4;">
+                        <th style="padding: 10px; text-align: left;">Producto</th>
+                        <th style="padding: 10px; text-align: left;">Fecha</th>
+                        <th style="padding: 10px; text-align: right;">Precio</th>
                     </tr>
                 </thead>
-                <tbody>
-                    ${data.map(s => `
-                        <tr>
-                            <td style="border: 1px solid #000; padding: 8px;">${s.name}</td>
-                            <td style="border: 1px solid #000; padding: 8px;">${s.date}</td>
-                            <td style="border: 1px solid #000; padding: 8px;">Gs. ${s.price.toLocaleString('es-PY')}</td>
-                        </tr>
-                    `).join('')}
-                </tbody>
+                <tbody>${tableRowsHTML}</tbody>
             </table>
-        </body>
-        </html>
-    `);
-    doc.close();
+            <h2 style="text-align: right; margin-top: 20px;">Total: Gs. ${totalSum.toLocaleString('es-PY')}</h2>
+        </div>
+    `;
 
-    // 3. Convertimos SOLO el body del iFrame
-    try {
-        const opt = {
-            margin: 10,
-            filename: 'Reporte_Ventas.pdf',
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
+    // Configuración de la descarga
+    const opt = {
+        margin:       10,
+        filename:     `Reporte_Ventas_${startDate}_al_${endDate}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
 
-        await html2pdf().set(opt).from(doc.body).save();
-    } catch (err) {
-        console.error("Error definitivo:", err);
-    } finally {
-        // 4. Limpieza
-        document.body.removeChild(iframe);
-    }
+    // ¡Aquí ocurre la magia de la descarga!
+    html2pdf().set(opt).from(element).save();
 }
         // REGISTRO DEL SERVICE WORKER PARA PWA
         if ('serviceWorker' in navigator) {
