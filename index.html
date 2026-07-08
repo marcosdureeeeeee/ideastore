@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IDEAStore</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#B57C80">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#B57C80">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #FBF6F6;
+        }
+        :root {
+            --rosa-viejo-dark: #8C5256;
+            --rosa-viejo: #B57C80;
+            --rosa-viejo-light: #E2C2C4;
+            --rosa-viejo-soft: #FAEDF0;
+        }
+        .bg-rosa-viejo { background-color: var(--rosa-viejo); }
+        .bg-rosa-viejo-soft { background-color: var(--rosa-viejo-soft); }
+        .text-rosa-viejo { color: var(--rosa-viejo-dark); }
+    </style>
+</head>
+<body class="p-4 md:p-8 text-gray-700 min-h-screen">
+
+    <div id="login-container" class="fixed inset-0 flex items-center justify-center bg-[#FBF6F6] p-4 z-50">
+        <div class="max-w-md w-full bg-white p-8 rounded-3xl shadow-xs border border-pink-100">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-rosa-viejo-soft rounded-2xl flex items-center justify-center mx-auto mb-3">
+                    <span class="text-2xl">✨</span>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800">IDEAStore App</h2>
+                <p class="text-sm text-gray-400 mt-1">Ingresá tus datos para iniciar sesión</p>
+            </div>
+
+            <form id="login-form" class="space-y-4" onsubmit="handleLogin(event)">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Usuario</label>
+                    <input type="text" id="login-user" required placeholder="Ej: usuario" 
+                        class="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none focus:border-[#B57C80] focus:ring-2 focus:ring-[#E2C2C4] transition-all text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Contraseña</label>
+                    <input type="password" id="login-pass" required placeholder="••••" 
+                        class="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none focus:border-[#B57C80] focus:ring-2 focus:ring-[#E2C2C4] transition-all text-sm">
+                </div>
+                <div id="login-error" class="text-xs text-red-500 hidden font-medium">
+                    ❌ Usuario o contraseña incorrectos. Intentá de nuevo.
+                </div>
+                <button type="submit" 
+                    class="w-full bg-rosa-viejo text-white font-medium py-3 rounded-xl hover:bg-[#8C5256] transition-colors cursor-pointer shadow-xs text-sm mt-2">
+                    Entrar al Sistema 🚀
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="app-container" class="max-w-6xl w-full mx-auto hidden">
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 bg-white p-6 rounded-2xl shadow-xs border border-pink-100">
+            <div>
+                <h1 class="text-2xl font-bold text-rosa-viejo flex items-center gap-2">
+                    ✨ IDEAStore App
+                </h1>
+                <p class="text-sm text-gray-400">Administración de la librería</p>
+            </div>
+            <div class="mt-4 md:mt-0 flex items-center gap-4">
+                <div class="bg-rosa-viejo-soft px-4 py-2 rounded-xl text-rosa-viejo font-semibold text-sm">
+                    📅 Fecha: <span id="current-date-badge"></span>
+                </div>
+                <button onclick="handleLogout()" class="text-xs bg-gray-100 text-gray-500 hover:bg-gray-200 px-3 py-2 rounded-xl transition-colors cursor-pointer font-medium">
+                    Salir 🚪
+                </button>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <div class="lg:col-span-1 space-y-6">
+                
+                <div class="bg-white p-6 rounded-2xl shadow-xs border border-pink-100">
+                    <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        📦 Cargar Producto
+                    </h2>
+                    
+                    <form id="sales-form" class="space-y-4" autocomplete="off">
+                        <div class="relative">
+                            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Nombre del Producto</label>
+                            <input type="text" id="product-name" required placeholder="Ej: Lápiz, Cuaderno..." 
+                                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none focus:border-[#B57C80] focus:ring-2 focus:ring-[#E2C2C4] transition-all text-sm">
+                            <div id="suggestions-box" class="absolute left-0 right-0 mt-1 bg-white border border-gray-100 rounded-xl shadow-lg max-h-48 overflow-y-auto hidden z-50"></div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Precio (Gs.)</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-2.5 text-gray-400 text-sm">Gs.</span>
+                                <input type="number" id="product-price" required min="0" step="50" placeholder="0" 
+                                    class="w-full pl-12 pr-4 py-2.5 rounded-xl border border-gray-200 outline-none focus:border-[#B57C80] focus:ring-2 focus:ring-[#E2C2C4] transition-all text-sm">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Fecha de Venta</label>
+                            <input type="date" id="product-date" required
+                                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none focus:border-[#B57C80] focus:ring-2 focus:ring-[#E2C2C4] transition-all text-sm text-gray-600">
+                        </div>
+
+                        <button type="submit" 
+                            class="w-full bg-rosa-viejo text-white font-medium py-3 rounded-xl hover:bg-[#8C5256] transition-colors cursor-pointer shadow-xs text-sm mt-2">
+                    		➕ Registrar Venta
+                        </button>
+                    </form>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-xs border border-pink-100">
+                    <h2 class="text-lg font-bold text-gray-800 mb-2 flex items-center gap-2">
+                        🖨️ Acceso Rápido
+                    </h2>
+                    
+                    <div class="space-y-3">
+                          <button onclick="quickPrint('Fotocopia', 500)" class="w-full text-left px-4 py-3 rounded-xl border border-dashed border-gray-200 hover:border-[#B57C80] hover:bg-rosa-viejo-soft transition-all flex justify-between items-center group cursor-pointer">
+                            <div>
+                                <p class="text-sm font-medium text-gray-700 group-hover:text-rosa-viejo">📄 Fotocopias Estándar</p>
+                                <p class="text-xs text-gray-400">Estándar Hojas A4 / Oficio</p>
+                            </div>
+                            <span class="text-sm font-semibold text-gray-500 bg-gray-50 px-2 py-1 rounded-lg group-hover:bg-white group-hover:text-rosa-viejo">Gs. 500</span>
+                        </button>
+
+                        <button onclick="quickPrint('Impresión Blanco y Negro', 1500)" class="w-full text-left px-4 py-3 rounded-xl border border-dashed border-gray-200 hover:border-[#B57C80] hover:bg-rosa-viejo-soft transition-all flex justify-between items-center group cursor-pointer">
+                            <div>
+                                <p class="text-sm font-medium text-gray-700 group-hover:text-rosa-viejo">🔲 Blanco y Negro</p>
+                                <p class="text-xs text-gray-400">Estándar Hojas A4 / Oficio</p>
+                            </div>
+                            <span class="text-sm font-semibold text-gray-500 bg-gray-50 px-2 py-1 rounded-lg group-hover:bg-white group-hover:text-rosa-viejo">Gs. 1500</span>
+                        </button>
+
+                        <button onclick="quickPrint('Impresión a Color', 3000)" class="w-full text-left px-4 py-3 rounded-xl border border-dashed border-gray-200 hover:border-[#B57C80] hover:bg-rosa-viejo-soft transition-all flex justify-between items-center group cursor-pointer">
+                            <div>
+                                <p class="text-sm font-medium text-gray-700 group-hover:text-rosa-viejo">🎨 Color</p>
+                                <p class="text-xs text-gray-400">Full color gráfico</p>
+                            </div>
+                            <span class="text-sm font-semibold text-gray-500 bg-gray-50 px-2 py-1 rounded-lg group-hover:bg-white group-hover:text-rosa-viejo">Gs. 3000</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-xs border border-pink-100">
+                    <h2 class="text-lg font-bold text-gray-800 mb-1 flex items-center gap-2">
+                        📊 Reportes y Cierre
+                    </h2>
+                    <p class="text-xs text-gray-400 mb-4">Descargar resumen de ventas en PDF</p>
+                    
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Desde:</label>
+                            <input type="date" id="report-start" class="w-full px-3 py-2 rounded-xl border border-gray-200 outline-none text-xs text-gray-600">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Hasta:</label>
+                            <input type="date" id="report-end" class="w-full px-3 py-2 rounded-xl border border-gray-200 outline-none text-xs text-gray-600">
+                        </div>
+                        <button onclick="generatePDFReport()" class="w-full bg-gray-800 text-white font-medium py-2.5 rounded-xl hover:bg-black transition-colors cursor-pointer text-xs mt-2 flex items-center justify-center gap-2">
+                            📄 Generar Reporte PDF
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="lg:col-span-2 space-y-6">
+                
+                <div class="bg-rosa-viejo text-white p-6 rounded-2xl shadow-sm relative overflow-hidden">
+                    <div class="absolute right-0 bottom-0 opacity-10 translate-x-4 translate-y-4">
+                        <svg width="200" height="200" fill="currentColor" viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+                    </div>
+                    <p class="text-sm opacity-80 uppercase tracking-wider font-semibold">Total Recaudado del Día</p>
+                    <p class="text-4xl font-bold mt-2" id="total-sales">Gs. 0</p>
+                    <p class="text-xs opacity-70 mt-2" id="total-count">0 productos vendidos hoy</p>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-xs border border-pink-100 overflow-hidden">
+                    <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                        <h3 class="font-bold text-gray-800 text-lg">📋 Registro de Ventas Completo</h3>
+                        <button onclick="clearAllSales()" class="text-xs text-red-400 hover:text-red-600 font-medium cursor-pointer">
+                            Limpiar Historial completo
+                        </button>
+                    </div>
+                    
+                    <div class="overflow-x-auto max-h-[550px]">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                                    <th class="px-6 py-3">Producto</th>
+                                    <th class="px-6 py-3">Fecha</th>
+                                    <th class="px-6 py-3 text-right">Precio</th>
+                                    <th class="px-6 py-3 text-center">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sales-table-body" class="divide-y divide-gray-100 text-sm">
+                                </tbody>
+                        </table>
+                        <div id="no-sales-message" class="p-8 text-center text-gray-400 hidden">
+                            Aún no hay ventas registradas en el sistema.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURACIÓN DE SUPABASE
+        const SUPABASE_URL = "https://ivhkxgxixdshhzxxhhur.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_zSnb4yNKXCo1ZBZ-38vIvw_pEib7vGS";
+        
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const defaultSuggestions = [
+            "Lápiz de papel HB", "Lápiz de color Faber-Castell", "Lapicera Azul Bic", "Lapicera Negra Bic",
+            "Impresión Blanco y Negro A4", "Impresión Color A4", "Cuaderno Universitario 84 hojas", 
+            "Goma de borrar", "Regla de 30cm", "Plasticola chica", "Cartulina escolar"
+        ];
+
+        let salesList = [];
+
+        function getLocalDateString() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // COMPROBACIÓN AUTOMÁTICA DE SESIÓN AL CARGAR LA PÁGINA
+        window.addEventListener('DOMContentLoaded', () => {
+            const isAuth = localStorage.getItem('ideastore_authenticated');
+            if (isAuth === 'true') {
+                // Si ya estaba autenticada, saltamos directo a la app
+                document.getElementById('login-container').classList.add('hidden');
+                document.getElementById('app-container').classList.remove('hidden');
+                initApp();
+            }
+        });
+
+        // Manejo del Login
+        function handleLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('login-user').value.trim();
+            const pass = document.getElementById('login-pass').value.trim();
+            const errorMsg = document.getElementById('login-error');
+
+            if (user === 'Raquel' && pass === '615065') {
+                errorMsg.classList.add('hidden');
+                
+                // SUPERPODER: Guardamos la sesión en el navegador
+                localStorage.setItem('ideastore_authenticated', 'true');
+                
+                document.getElementById('login-container').classList.add('hidden');
+                document.getElementById('app-container').classList.remove('hidden');
+                initApp();
+            } else {
+                errorMsg.classList.remove('hidden');
+            }
+        }
+
+        function handleLogout() {
+            // Borramos la sesión de la memoria al salir a propósito
+            localStorage.removeItem('ideastore_authenticated');
+            
+            document.getElementById('app-container').classList.add('hidden');
+            document.getElementById('login-container').classList.remove('hidden');
+            document.getElementById('login-pass').value = '';
+        }
+
+        // Inicializar la App
+        async function initApp() {
+            const todayStr = getLocalDateString();
+            document.getElementById('product-date').value = todayStr;
+            document.getElementById('report-start').value = todayStr;
+            document.getElementById('report-end').value = todayStr;
+            document.getElementById('current-date-badge').innerText = formatDate(todayStr);
+            
+            await fetchSales();
+            setupAutocomplete();
+        }
+
+        // Leer datos desde Supabase
+        async function fetchSales() {
+            const { data, error } = await supabaseClient
+                .from('sales')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error("Error leyendo datos de la nube:", error);
+                alert("Hubo un problema al cargar los datos desde la nube.");
+            } else {
+                salesList = data || [];
+                renderSales();
+            }
+        }
+
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString + 'T00:00:00').toLocaleDateString('es-ES', options);
+        }
+
+        // Autocompletado inteligente
+        function setupAutocomplete() {
+            const input = document.getElementById('product-name');
+            const box = document.getElementById('suggestions-box');
+
+            input.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase().trim();
+                box.innerHTML = '';
+                
+                if (!query) {
+                    box.classList.add('hidden');
+                    return;
+                }
+
+                const allProducts = [...new Set([...salesList.map(s => s.name), ...defaultSuggestions])];
+                const filtered = allProducts.filter(item => item.toLowerCase().includes(query));
+
+                if (filtered.length > 0) {
+                    filtered.forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'px-4 py-2 hover:bg-rosa-viejo-soft text-sm text-gray-700 cursor-pointer transition-colors';
+                        div.innerText = item;
+                        div.onclick = () => {
+                            input.value = item;
+                            box.classList.add('hidden');
+                            document.getElementById('product-price').focus();
+                        };
+                        box.appendChild(div);
+                    });
+                    box.classList.remove('hidden');
+                } else {
+                    box.classList.add('hidden');
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if (e.target !== input && e.target !== box) {
+                    box.classList.add('hidden');
+                }
+            });
+        }
+
+        // Registrar venta
+        document.getElementById('sales-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('product-name').value;
+            const price = Math.round(parseFloat(document.getElementById('product-price').value));
+            const date = document.getElementById('product-date').value;
+
+            await addSale(name, price, date);
+            
+            document.getElementById('product-name').value = '';
+            document.getElementById('product-price').value = '';
+        });
+
+        async function addSale(name, price, date) {
+            const { error } = await supabaseClient
+                .from('sales')
+                .insert([{ name: name, price: price, date: date }]);
+
+            if (error) {
+                console.error("Error al guardar:", error);
+                alert("No se pudo guardar la venta en internet.");
+            } else {
+                await fetchSales();
+            }
+        }
+
+        // Carga rápida de impresiones
+        async function quickPrint(type, defaultPrice) {
+            const todayStr = getLocalDateString();
+            
+            const priceInput = prompt(`Confirmar o cambiar el precio UNITARIO para "${type}" (Gs.):`, defaultPrice);
+            if (priceInput === null) return; 
+            
+            const price = parseFloat(priceInput);
+            if (isNaN(price) || price < 0) {
+                alert("Por favor, ingresá un precio válido.");
+                return;
+            }
+
+            const qtyInput = prompt(`¿Cuántas copias / impresiones de "${type}" son?`, "1");
+            if (qtyInput === null) return; 
+            
+            const qty = parseInt(qtyInput);
+            if (isNaN(qty) || qty <= 0) {
+                alert("Por favor, ingresá una cantidad válida (mayor a 0).");
+                return;
+            }
+
+            const totalCalculated = Math.round(price * qty);
+            const dynamicName = `${type} (x${qty})`;
+
+            await addSale(dynamicName, totalCalculated, todayStr);
+        }
+
+        // Eliminar venta individual
+        async function deleteSale(id) {
+            const { error } = await supabaseClient
+                .from('sales')
+                .delete()
+                .eq('id', id);
+
+            if (error) {
+                console.error("Error al borrar:", error);
+                alert("No se pudo eliminar el registro de la nube.");
+            } else {
+                await fetchSales();
+            }
+        }
+
+        // Limpiar todo el historial
+        async function clearAllSales() {
+            if (confirm('¿Querés borrar definitivamente todo el historial de ventas guardado en la nube?')) {
+                const { error } = await supabaseClient
+                    .from('sales')
+                    .delete()
+                    .neq('id', 0);
+
+                if (error) {
+                    console.error("Error al vaciar:", error);
+                    alert("No se pudo limpiar la base de datos.");
+                } else {
+                    await fetchSales();
+                }
+            }
+        }
+
+        // Renderizar en interfaz con formato local guaraní
+        function renderSales() {
+            const tableBody = document.getElementById('sales-table-body');
+            const noSalesMsg = document.getElementById('no-sales-message');
+            const totalSalesEl = document.getElementById('total-sales');
+            const totalCountEl = document.getElementById('total-count');
+
+            tableBody.innerHTML = '';
+            
+            let totalSum = 0;
+            let salesCount = 0;
+            const todayStr = getLocalDateString();
+
+            if (salesList.length === 0) {
+                noSalesMsg.classList.remove('hidden');
+            } else {
+                noSalesMsg.classList.add('hidden');
+                
+                salesList.forEach(sale => {
+                    if(sale.date === todayStr) {
+                        totalSum += sale.price;
+                        salesCount++;
+                    }
+
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-gray-50 transition-colors';
+                    tr.innerHTML = `
+                        <td class="px-6 py-4 font-medium text-gray-800">${sale.name}</td>
+                        <td class="px-6 py-4 text-gray-400 text-xs">${formatDate(sale.date)}</td>
+                        <td class="px-6 py-4 text-right font-semibold text-gray-700">Gs. ${sale.price.toLocaleString('es-PY')}</td>
+                        <td class="px-6 py-4 text-center">
+                            <button onclick="deleteSale(${sale.id})" class="text-red-400 hover:text-red-600 transition-colors cursor-pointer">
+                                🗑️
+                            </button>
+                        </td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            }
+
+            totalSalesEl.innerText = `Gs. ${totalSum.toLocaleString('es-PY')}`;
+            totalCountEl.innerText = `${salesCount} producto(s) vendido(s) hoy`;
+        }
+
+        // GENERAR REPORTE PDF FILTRADO
+        async function generatePDFReport() {
+            const startDate = document.getElementById('report-start').value;
+            const endDate = document.getElementById('report-end').value;
+
+            if (!startDate || !endDate) {
+                alert("Por favor, seleccioná ambas fechas (Desde y Hasta).");
+                return;
+            }
+
+            const { data, error } = await supabaseClient
+                .from('sales')
+                .select('*')
+                .gte('date', startDate)
+                .lte('date', endDate)
+                .order('date', { ascending: true });
+
+            if (error) {
+                console.error("Error al generar reporte:", error);
+                alert("No se pudieron traer los datos para el PDF.");
+                return;
+            }
+
+            if (!data || data.length === 0) {
+                alert("No hay ventas registradas en ese rango de fechas.");
+                return;
+            }
+
+            let totalSum = 0;
+            let tableRowsHTML = '';
+
+            data.forEach(sale => {
+                totalSum += sale.price;
+                tableRowsHTML += `
+                    <tr style="border-bottom: 1px solid #eee; font-size: 13px;">
+                        <td style="padding: 10px; color: #333;">${sale.name}</td>
+                        <td style="padding: 10px; color: #666;">${formatDate(sale.date)}</td>
+                        <td style="padding: 10px; text-align: right; font-weight: 600; color: #333;">Gs. ${sale.price.toLocaleString('es-PY')}</td>
+                    </tr>
+                `;
+            });
+
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Reporte de Ventas - IDEAStore</title>
+                    <style>
+                        body { font-family: 'Segoe UI', system-ui, sans-serif; color: #333; padding: 40px; }
+                        .header { text-align: center; margin-bottom: 30px; border-bottom: 3px solid #B57C80; padding-bottom: 20px; }
+                        .header h1 { color: #8C5256; margin: 0; font-size: 26px; letter-spacing: 0.5px; }
+                        .header p { margin: 5px 0 0 0; color: #888; font-size: 13px; }
+                        .meta-info { margin-bottom: 25px; font-size: 13px; display: flex; justify-content: space-between; background: #FAEDF0; padding: 12px 20px; border-radius: 8px; color: #8C5256; font-weight: 500;}
+                        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+                        th { background-color: #8C5256; color: white; padding: 12px; text-align: left; font-size: 13px; text-transform: uppercase;}
+                        .total-box { text-align: right; font-size: 20px; font-weight: bold; color: #8C5256; margin-top: 20px; border-top: 3px double #B57C80; padding-top: 15px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>✨ IDEAStore - REPORTE DE VENTAS</h1>
+                        <p>Resumen Oficial de Caja y Movimientos de Librería</p>
+                    </div>
+                    <div class="meta-info">
+                        <div><strong>RANGO FILTRADO:</strong> Desde el ${formatDate(startDate)} hasta el ${formatDate(endDate)}</div>
+                        <div><strong>EMISIÓN:</strong> ${formatDate(getLocalDateString())}</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="border-top-left-radius: 6px; border-bottom-left-radius: 6px;">Producto / Descripción</th>
+                                <th>Fecha de Registro</th>
+                                <th style="text-align: right; border-top-right-radius: 6px; border-bottom-right-radius: 6px;">Monto Cobrado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${tableRowsHTML}
+                        </tbody>
+                    </table>
+                    <div class="total-box">
+                        TOTAL GENERAL RECAUDADO: Gs. ${totalSum.toLocaleString('es-PY')}
+                    </div>
+                    <script>
+                        window.onload = function() {
+                            window.print();
+                            window.onafterprint = function() { window.close(); }
+                        }
+                    <\/script>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+        // REGISTRO DEL SERVICE WORKER PARA PWA
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('¡Service Worker activado con éxito, kp!', reg))
+            .catch(err => console.error('Error al registrar el Service Worker:', err));
+    });
+}
+    </script>
+</body>
+</html>
