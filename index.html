@@ -201,14 +201,20 @@
                     
                     <div class="overflow-x-auto max-h-[550px]">
                         <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-gray-50 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                                    <th class="px-6 py-3">Producto</th>
-                                    <th class="px-6 py-3">Fecha</th>
-                                    <th class="px-6 py-3 text-right">Precio</th>
-                                    <th class="px-6 py-3 text-center">Acción</th>
-                                </tr>
-                            </thead>
+<thead>
+    <tr class="bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+        <th class="px-5 py-3">Producto</th>
+        <th class="px-5 py-3">Cantidad</th> <th class="px-5 py-3">Precio Total</th>
+        <th class="px-5 py-3">
+            <div class="flex items-center gap-1">
+                <span>Fecha</span>
+                <button id="btn-sort-date" type="button" class="focus:outline-none hover:text-pink-500 text-sm p-1">
+                    🔽
+                </button>
+            </div>
+        </th>
+    </tr>
+</thead>
                             <tbody id="sales-table-body" class="divide-y divide-gray-100 text-sm">
                                 </tbody>
                         </table>
@@ -237,7 +243,7 @@
         ];
 
         let salesList = [];
-
+        let sortOrder = 'desc';
         function getLocalDateString() {
             const now = new Date();
             const year = now.getFullYear();
@@ -364,22 +370,27 @@
 
       
 // Registrar venta 
+// CONTROLADOR DEL FORMULARIO (Así tiene que quedar completo)
 document.getElementById('sales-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     
+    //  Agarramos los datos de los inputs
     const name = document.getElementById('product-name').value;
     const unitPrice = Math.round(parseFloat(document.getElementById('product-price').value));
     const quantity = parseInt(document.getElementById('product-quantity').value) || 1;
     const date = document.getElementById('product-date').value;
 
-// Multiplicador
+    //  Hace la multiplicación en el aire
     const totalPrice = unitPrice * quantity;
 
-    // Se agrega cantidad al lado del prodcuto
-    const nameWithQuantity = quantity > 1 ? `${name} (x${quantity})` : name;
-
-    // TOTAL precio
-    await addSale(nameWithQuantity, totalPrice, date);
+    // Pasamos: nombre, precio total, cantidad y fecha
+    await addSale(name, totalPrice, quantity, date);
+    
+    // Limpiamos los campos para la siguiente venta
+    document.getElementById('product-name').value = '';
+    document.getElementById('product-price').value = '';
+    document.getElementById('product-quantity').value = '1'; // Resetea a 1
+});
     
     // Limpiar formulario
     document.getElementById('product-name').value = '';
