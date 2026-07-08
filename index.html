@@ -6,6 +6,7 @@
     <title>IDEAStore</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700&display=swap" rel="stylesheet">
@@ -488,99 +489,70 @@
 
         // GENERAR REPORTE PDF FILTRADO
         async function generatePDFReport() {
-            const startDate = document.getElementById('report-start').value;
-            const endDate = document.getElementById('report-end').value;
+    const startDate = document.getElementById('report-start').value;
+    const endDate = document.getElementById('report-end').value;
 
-            if (!startDate || !endDate) {
-                alert("Por favor, seleccioná ambas fechas (Desde y Hasta).");
-                return;
-            }
+    if (!startDate || !endDate) {
+        alert("Por favor, seleccioná ambas fechas.");
+        return;
+    }
 
-            const { data, error } = await supabaseClient
-                .from('sales')
-                .select('*')
-                .gte('date', startDate)
-                .lte('date', endDate)
-                .order('date', { ascending: true });
+    const { data, error } = await supabaseClient
+        .from('sales')
+        .select('*')
+        .gte('date', startDate)
+        .lte('date', endDate)
+        .order('date', { ascending: true });
 
-            if (error) {
-                console.error("Error al generar reporte:", error);
-                alert("No se pudieron traer los datos para el PDF.");
-                return;
-            }
+    if (error || !data || data.length === 0) {
+        alert("No hay ventas para este rango.");
+        return;
+    }
 
-            if (!data || data.length === 0) {
-                alert("No hay ventas registradas en ese rango de fechas.");
-                return;
-            }
+    let totalSum = 0;
+    let tableRowsHTML = data.map(sale => {
+        totalSum += sale.price;
+        return `
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${sale.name} (x${sale.quantity || 1})</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">${formatDate(sale.date)}</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;">Gs. ${sale.price.toLocaleString('es-PY')}</td>
+            </tr>
+        `;
+    }).join('');
 
-            let totalSum = 0;
-            let tableRowsHTML = '';
-
-            data.forEach(sale => {
-                totalSum += sale.price;
-                const cantidadReporte = sale.quantity || 1;
-                
-                tableRowsHTML += `
-                    <tr style="border-bottom: 1px solid #eee; font-size: 13px;">
-                        <td style="padding: 10px; color: #333;">${sale.name} (x${cantidadReporte})</td>
-                        <td style="padding: 10px; color: #666;">${formatDate(sale.date)}</td>
-                        <td style="padding: 10px; text-align: right; font-weight: 600; color: #333;">Gs. ${sale.price.toLocaleString('es-PY')}</td>
+    // Creamos un elemento temporal que NO se ve en pantalla pero que la librería va a convertir en PDF
+    const element = document.createElement('div');
+    element.innerHTML = `
+        <div style="font-family: sans-serif; padding: 20px;">
+            <h1 style="color: #8C5256; text-align: center;">Reporte IDEAStore</h1>
+            <p style="text-align: center;">Desde ${formatDate(startDate)} hasta ${formatDate(endDate)}</p>
+            <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                <thead>
+                    <tr style="background: #f4f4f4;">
+                        <th style="padding: 10px; text-align: left;">Producto</th>
+                        <th style="padding: 10px; text-align: left;">Fecha</th>
+                        <th style="padding: 10px; text-align: right;">Precio</th>
                     </tr>
-                `;
-            });
+                </thead>
+                <tbody>${tableRowsHTML}</tbody>
+            </table>
+            <h2 style="text-align: right; margin-top: 20px;">Total: Gs. ${totalSum.toLocaleString('es-PY')}</h2>
+        </div>
+    `;
 
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write(`
-                <html>
-                <head>
-                    <title>Reporte de Ventas - IDEAStore</title>
-                    <style>
-                        body { font-family: 'Segoe UI', system-ui, sans-serif; color: #333; padding: 40px; }
-                        .header { text-align: center; margin-bottom: 30px; border-bottom: 3px solid #B57C80; padding-bottom: 20px; }
-                        .header h1 { color: #8C5256; margin: 0; font-size: 26px; letter-spacing: 0.5px; }
-                        .header p { margin: 5px 0 0 0; color: #888; font-size: 13px; }
-                        .meta-info { margin-bottom: 25px; font-size: 13px; display: flex; justify-content: space-between; background: #FAEDF0; padding: 12px 20px; border-radius: 8px; color: #8C5256; font-weight: 500;}
-                        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-                        th { background-color: #8C5256; color: white; padding: 12px; text-align: left; font-size: 13px; text-transform: uppercase;}
-                        .total-box { text-align: right; font-size: 20px; font-weight: bold; color: #8C5256; margin-top: 20px; border-top: 3px double #B57C80; padding-top: 15px; }
-                    </style>
-                </head>
-                <body>
-                    <div class="header">
-                        <h1>✨ IDEAStore - REPORTE DE VENTAS</h1>
-                        <p>Resumen Oficial de Caja y Movimientos de Librería</p>
-                    </div>
-                    <div class="meta-info">
-                        <div><strong>RANGO FILTRADO:</strong> Desde el ${formatDate(startDate)} hasta el ${formatDate(endDate)}</div>
-                        <div><strong>EMISIÓN:</strong> ${formatDate(getLocalDateString())}</div>
-                    </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th style="border-top-left-radius: 6px; border-bottom-left-radius: 6px;">Producto / Descripción</th>
-                                <th>Fecha de Registro</th>
-                                <th style="text-align: right; border-top-right-radius: 6px; border-bottom-right-radius: 6px;">Monto Cobrado</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${tableRowsHTML}
-                        </tbody>
-                    </table>
-                    <div class="total-box">
-                        TOTAL GENERAL RECAUDADO: Gs. ${totalSum.toLocaleString('es-PY')}
-                    </div>
-                    <script>
-                        window.onload = function() {
-                            window.print();
-                            window.onafterprint = function() { window.close(); }
-                        }
-                    <\/script>
-                </body>
-                </html>
-            `);
-            printWindow.document.close();
-        }
+    // Configuración de la descarga
+    const opt = {
+        margin:       10,
+        filename:     `Reporte_Ventas_${startDate}_al_${endDate}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    // ¡Aquí ocurre la magia de la descarga!
+    html2pdf().set(opt).from(element).save();
+}
 
         // REGISTRO DEL SERVICE WORKER PARA PWA
         if ('serviceWorker' in navigator) {
