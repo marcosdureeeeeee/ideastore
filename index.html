@@ -414,42 +414,82 @@
         }
 
         // GENERAR REPORTE PDF (Usando jsPDF directo)
-        async function generatePDFReport() {
-            const startDate = document.getElementById('report-start').value;
-            const endDate = document.getElementById('report-end').value;
-            if (!startDate || !endDate) { alert("Seleccioná las fechas."); return; }
+async function generatePDFReport() {
+    const startDate = document.getElementById('report-start').value;
+    const endDate = document.getElementById('report-end').value;
+    if (!startDate || !endDate) { alert("Por favor, seleccioná las fechas."); return; }
 
-            const { data, error } = await supabaseClient
-                .from('sales')
-                .select('*')
-                .gte('date', startDate)
-                .lte('date', endDate)
-                .order('date', { ascending: true });
+    const { data, error } = await supabaseClient
+        .from('sales')
+        .select('*')
+        .gte('date', startDate)
+        .lte('date', endDate)
+        .order('date', { ascending: true });
 
-            if (error || !data || data.length === 0) { alert("No hay ventas para el periodo."); return; }
+    if (error || !data || data.length === 0) { alert("No hay ventas para este periodo."); return; }
 
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFontSize(18);
-            doc.text("Reporte de Ventas IDEAStore", 105, 20, { align: "center" });
-            doc.setFontSize(12);
-            doc.text(`Desde: ${startDate} | Hasta: ${endDate}`, 20, 35);
-            let y = 50;
-            doc.line(20, y - 5, 190, y - 5);
-            doc.text("Producto", 20, y);
-            doc.text("Fecha", 100, y);
-            doc.text("Precio (Gs.)", 150, y);
-            doc.line(20, y + 2, 190, y + 2);
-            y += 10;
-            data.forEach(s => {
-                if (y > 280) { doc.addPage(); y = 20; }
-                doc.text(s.name, 20, y);
-                doc.text(s.date, 100, y);
-                doc.text(s.price.toLocaleString('es-PY'), 150, y);
-                y += 10;
-            });
-            doc.save(`Reporte_${startDate}_${endDate}.pdf`);
-        }
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    // Colores de tu marca
+    const primaryColor = [181, 124, 128]; // #B57C80
+    const textColor = [60, 60, 60];
+
+    // 1. Encabezado
+    doc.setFillColor(...primaryColor);
+    doc.rect(0, 0, 210, 35, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(22);
+    doc.text("Reporte de Ventas", 105, 18, { align: "center" });
+    doc.setFontSize(10);
+    doc.text(`IDEAStore | Generado el: ${new Date().toLocaleDateString()}`, 105, 27, { align: "center" });
+    
+    // 2. Info de fechas
+    doc.setTextColor(...textColor);
+    doc.setFontSize(11);
+    doc.text(`Periodo seleccionado: ${startDate} al ${endDate}`, 20, 45);
+    
+    // 3. Encabezados de tabla
+    let y = 55;
+    doc.setFillColor(248, 248, 248);
+    doc.rect(15, y, 180, 10, 'F');
+    doc.setTextColor(...primaryColor);
+    doc.setFontSize(12);
+    doc.text("Producto", 20, y + 7);
+    doc.text("Cant.", 100, y + 7);
+    doc.text("Total", 160, y + 7);
+    
+    // 4. Filas de datos
+    y += 15;
+    let grandTotal = 0;
+    doc.setTextColor(...textColor);
+    doc.setFontSize(10);
+    
+    data.forEach(s => {
+        if (y > 270) { doc.addPage(); y = 20; }
+        doc.text(s.name, 20, y);
+        doc.text((s.quantity || 1).toString(), 105, y);
+        doc.text(`Gs. ${s.price.toLocaleString('es-PY')}`, 160, y);
+        
+        grandTotal += s.price;
+        y += 8;
+        // Línea divisoria suave
+        doc.setDrawColor(230, 230, 230);
+        doc.line(15, y - 2, 195, y - 2);
+    });
+    
+    // 5. Total General
+    y += 10;
+    doc.setFillColor(240, 240, 240);
+    doc.rect(15, y - 7, 180, 12, 'F');
+    doc.setFontSize(14);
+    doc.setTextColor(0, 0, 0);
+    doc.text("TOTAL GENERAL:", 110, y);
+    doc.setTextColor(...primaryColor);
+    doc.text(`Gs. ${grandTotal.toLocaleString('es-PY')}`, 160, y);
+    
+    doc.save(`Reporte_${startDate}_${endDate}.pdf`);
+}
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
