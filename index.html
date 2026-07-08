@@ -92,12 +92,11 @@
                     </h2>
                     
                     <form id="sales-form" class="space-y-4" autocomplete="off">
-                        <div class="relative">
-                            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Nombre del Producto</label>
-                            <input type="text" id="product-name" required placeholder="Ej: Lápiz, Cuaderno..." 
-                                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none focus:border-[#B57C80] focus:ring-2 focus:ring-[#E2C2C4] transition-all text-sm">
-                            <div id="suggestions-box" class="absolute left-0 right-0 mt-1 bg-white border border-gray-100 rounded-xl shadow-lg max-h-48 overflow-y-auto hidden z-50"></div>
-                        </div>
+<div class="mb-4">
+    <label for="product-name-v2" class="block text-sm font-medium text-gray-700 mb-1">NOMBRE DEL PRODUCTO</label>
+    <input type="text" id="product-name-v2" name="product-name-v2" placeholder="Ej: Lápiz, Cuaderno..." required
+        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500">
+</div>
                             <div class="mb-4">
                                     <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Cantidad</label>
                                     <input type="number" id="product-quantity" value="1" min="1" required
@@ -370,33 +369,26 @@
 
       
 // Registrar venta 
-// CONTROLADOR DEL FORMULARIO (Así tiene que quedar completo)
+
 document.getElementById('sales-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    //  Agarramos los datos de los inputs
-    const name = document.getElementById('product-name').value;
+    // : Agarramos el valor con el nuevo ID
+    const name = document.getElementById('product-name-v2').value;
     const unitPrice = Math.round(parseFloat(document.getElementById('product-price').value));
     const quantity = parseInt(document.getElementById('product-quantity').value) || 1;
     const date = document.getElementById('product-date').value;
 
-    //  Hace la multiplicación en el aire
     const totalPrice = unitPrice * quantity;
 
-    // Pasamos: nombre, precio total, cantidad y fecha
     await addSale(name, totalPrice, quantity, date);
     
-    // Limpiamos los campos para la siguiente venta
-    document.getElementById('product-name').value = '';
+    //  Limpiamos el campo con el nuevo ID
+    document.getElementById('product-name-v2').value = '';
     document.getElementById('product-price').value = '';
-    document.getElementById('product-quantity').value = '1'; // Resetea a 1
+    document.getElementById('product-quantity').value = '1';
 });
     
-    // Limpiar formulario
-    document.getElementById('product-name').value = '';
-    document.getElementById('product-price').value = '';
-    document.getElementById('product-quantity').value = '1'; // Reseteamos la cantidad a 1 siempre
-});
 
        // MODIFICACIÓN: Registrar venta con soporte Offline
 async function addSale(name, price, date) {
