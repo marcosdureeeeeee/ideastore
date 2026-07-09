@@ -419,12 +419,6 @@ async function generatePDFReport() {
     const endDate = document.getElementById('report-end').value;
     if (!startDate || !endDate) { alert("Seleccioná las fechas."); return; }
 
-    // Función auxiliar para convertir AAAA-MM-DD a DD/MM/AAAA
-    const formatDateToPY = (dateString) => {
-        const [year, month, day] = dateString.split('-');
-        return `${day}/${month}/${year}`;
-    };
-
     const { data, error } = await supabaseClient
         .from('sales')
         .select('*')
@@ -437,10 +431,11 @@ async function generatePDFReport() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
-    const primaryColor = [181, 124, 128];
+    // Paleta de colores minimalista
+    const primaryColor = [181, 124, 128]; // Rosa Viejo
     const darkGray = [70, 70, 70];
 
-    // Encabezado
+    // --- Encabezado ---
     doc.setTextColor(...primaryColor);
     doc.setFontSize(22);
     doc.setFont("helvetica", "bold");
@@ -449,25 +444,25 @@ async function generatePDFReport() {
     doc.setTextColor(...darkGray);
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
-    // Usamos la función de formato aquí también para el título
-    doc.text(`Reporte: ${formatDateToPY(startDate)} al ${formatDateToPY(endDate)}`, 20, 28);
+    doc.text(`Reporte detallado: ${startDate} al ${endDate}`, 20, 28);
     
     doc.setDrawColor(220, 220, 220);
     doc.line(20, 35, 190, 35);
 
-    // Tabla
+    // --- Tabla (Nueva estructura con Fecha) ---
     let y = 45;
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(...primaryColor);
     
+    // Encabezados ajustados
     doc.text("PRODUCTO", 20, y);
     doc.text("FECHA", 100, y);
     doc.text("CANT.", 140, y);
     doc.text("TOTAL (Gs.)", 185, y, { align: 'right' });
     
     y += 5;
-    doc.line(20, y, 190, y);
+    doc.line(20, y, 190, y); // Línea debajo de encabezados
     
     y += 10;
     doc.setFont("helvetica", "normal");
@@ -479,15 +474,15 @@ async function generatePDFReport() {
         if (y > 270) { doc.addPage(); y = 20; }
         
         doc.text(s.name, 20, y);
-        doc.text(formatDateToPY(s.date), 100, y); // <--- AQUÍ SE APLICA EL CAMBIO
-        doc.text((s.quantity || 1).toString(), 145, y);
-        doc.text(s.price.toLocaleString('es-PY'), 185, y, { align: 'right' });
+        doc.text(s.date, 100, y); // Columna Fecha añadida
+        doc.text((s.quantity || 1).toString(), 145, y); // Columna Cantidad
+        doc.text(s.price.toLocaleString('es-PY'), 185, y, { align: 'right' }); // Columna Total
         
         grandTotal += s.price;
         y += 8;
     });
 
-    // Total
+    // --- Total ---
     y += 5;
     doc.line(130, y, 190, y);
     y += 8;
