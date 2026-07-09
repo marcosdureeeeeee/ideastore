@@ -200,7 +200,7 @@
                 <div class="bg-white rounded-2xl shadow-xs border border-pink-100 overflow-hidden">
                     <div class="p-6 border-b border-gray-100 flex justify-between items-center">
                         <h3 class="font-bold text-gray-800 text-lg">📋 Registro de Ventas Completo</h3>
-                        <button onclick="clearAllSales()" class="admin-only text-xs text-red-400 hover:text-red-600 font-medium cursor-pointer">
+                        <button onclick="clearAllSales()" class="Administrador-only text-xs text-red-400 hover:text-red-600 font-medium cursor-pointer">
                             Limpiar Historial completo
                         </button>
                     </div>
@@ -379,14 +379,14 @@ function iniciarSesionExitoso() {
     const rol = localStorage.getItem('ideastore_role');
     
     // Si NO es admin, ocultamos los botones de borrar
-    if (rol !== 'admin') {
+    if (rol !== 'Administrador') {
         // Buscamos todos los botones que tengan una clase 'admin-only' y los ocultamos
-        const botonesAdmin = document.querySelectorAll('.admin-only');
+        const botonesAdmin = document.querySelectorAll('.Administrador-only');
         botonesAdmin.forEach(btn => btn.style.display = 'none');
     } else {
         // --- AGREGÁ ESTO ---
         // Si ES admin, nos aseguramos de que el botón se vea
-        const botonesAdmin = document.querySelectorAll('.admin-only');
+        const botonesAdmin = document.querySelectorAll('.Administrador-only');
         botonesAdmin.forEach(btn => btn.style.display = 'block'); // O 'inline-block', según tu diseño
     }
 }
