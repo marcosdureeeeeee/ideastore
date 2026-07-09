@@ -342,23 +342,31 @@
             }
         });
 
-function handleLogin(e) {
+async function handleLogin(e) {
     e.preventDefault();
     const user = document.getElementById('login-user').value.trim();
     const pass = document.getElementById('login-pass').value.trim();
     const errorMsg = document.getElementById('login-error');
 
-    // Definimos los usuarios permitidos
-    if (user === 'Raquel' && pass === '615065') {
+    // Consultamos la base de datos en lugar de usar if/else en el código
+    const { data, error } = await supabaseClient
+        .from('credenciales')
+        .select('*')
+        .eq('usuario', user)
+        .eq('password', pass)
+        .single(); // Esto trae solo 1 registro si coincide
+
+    if (data) {
+        // Login exitoso: guardamos todo en el localStorage
         localStorage.setItem('ideastore_authenticated', 'true');
-        localStorage.setItem('ideastore_role', 'user'); // Usuario normal
-        iniciarSesionExitoso();
-    } else if (user === 'Marcos' && pass === '8791') {
-        localStorage.setItem('ideastore_authenticated', 'true');
-        localStorage.setItem('ideastore_role', 'admin'); // Administrador
+        localStorage.setItem('ideastore_role', data.rol);
+        localStorage.setItem('ideastore_user', data.usuario); // Guardamos el usuario para el perfil
+        
         iniciarSesionExitoso();
     } else {
+        // Si no hay data o hubo error, mostramos el mensaje de error
         errorMsg.classList.remove('hidden');
+        console.error("Error de login:", error);
     }
 }
 
