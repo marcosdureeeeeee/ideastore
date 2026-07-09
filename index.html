@@ -85,6 +85,16 @@
             </div>
         </header>
 
+        <div class="flex gap-2 mb-6">
+            <button id="nav-ventas" onclick="showSection('ventas')" class="px-4 py-2 rounded-xl text-sm font-semibold transition-colors cursor-pointer bg-rosa-viejo text-white shadow-xs">
+                📦 Ventas
+            </button>
+            <button id="nav-catalogo" onclick="showSection('catalogo')" class="px-4 py-2 rounded-xl text-sm font-semibold transition-colors cursor-pointer bg-white text-gray-500 border border-pink-100 hover:bg-rosa-viejo-soft">
+                🗂️ Catálogo
+            </button>
+        </div>
+
+        <div id="section-ventas">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div class="lg:col-span-1 space-y-6">
                 <div class="bg-white p-6 rounded-2xl shadow-xs border border-pink-100">
@@ -95,8 +105,9 @@
                     <form id="sales-form" class="space-y-4">
                         <div class="mb-4">
                             <label for="product-name-v2" class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">NOMBRE DEL PRODUCTO</label>
-                            <input type="text" id="product-name-v2" name="product-name-v2" placeholder="Ej: Lápiz, Cuaderno..." required
+                            <input type="text" id="product-name-v2" name="product-name-v2" placeholder="Ej: Lápiz, Cuaderno..." list="productos-datalist" autocomplete="off" required
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500">
+                            <datalist id="productos-datalist"></datalist>
                         </div>
                         <div class="mb-4">
                             <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Cantidad</label>
@@ -216,12 +227,69 @@
                 </div>
             </div>
         </div>
+        </div>
+
+        <div id="section-catalogo" class="hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-1">
+                    <div class="bg-white p-6 rounded-2xl shadow-xs border border-pink-100">
+                        <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                            ➕ Nuevo Producto
+                        </h2>
+                        <form id="catalog-form" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Nombre del producto</label>
+                                <input type="text" id="catalog-name" placeholder="Ej: Cuaderno universitario" required
+                                    class="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none focus:border-[#B57C80] focus:ring-2 focus:ring-[#E2C2C4] transition-all text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Precio (Gs.)</label>
+                                <div class="relative">
+                                    <span class="absolute left-4 top-2.5 text-gray-400 text-sm">Gs.</span>
+                                    <input type="number" id="catalog-price" required min="0" step="50" placeholder="0"
+                                        class="w-full pl-12 pr-4 py-2.5 rounded-xl border border-gray-200 outline-none focus:border-[#B57C80] focus:ring-2 focus:ring-[#E2C2C4] transition-all text-sm">
+                                </div>
+                            </div>
+                            <button type="submit"
+                                class="w-full bg-rosa-viejo text-white font-medium py-3 rounded-xl hover:bg-[#8C5256] transition-colors cursor-pointer shadow-xs text-sm mt-2">
+                                Guardar Producto
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-2xl shadow-xs border border-pink-100 overflow-hidden">
+                        <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                            <h3 class="font-bold text-gray-800 text-lg">🗂️ Catálogo de Productos</h3>
+                        </div>
+                        <div class="overflow-x-auto max-h-[550px]">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        <th class="px-5 py-3">Producto</th>
+                                        <th class="px-5 py-3">Precio (Gs.)</th>
+                                        <th class="px-5 py-3"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="catalog-tbody" class="divide-y divide-gray-100 text-sm">
+                                </tbody>
+                            </table>
+                            <div id="no-catalog-message" class="p-8 text-center text-gray-400 hidden">
+                                Todavía no cargaste productos en el catálogo.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
         // GLOBALES
         let sortOrder = 'desc';
         let salesList = [];
+        let catalogList = [];
 
         // CONFIGURACIÓN DE SUPABASE
         const SUPABASE_URL = "https://ivhkxgxixdshhzxxhhur.supabase.co";
@@ -262,6 +330,32 @@
             }
         }
 
+        function showSection(section) {
+            const secVentas = document.getElementById('section-ventas');
+            const secCatalogo = document.getElementById('section-catalogo');
+            const navVentas = document.getElementById('nav-ventas');
+            const navCatalogo = document.getElementById('nav-catalogo');
+            const activeClasses = ['bg-rosa-viejo', 'text-white', 'shadow-xs'];
+            const inactiveClasses = ['bg-white', 'text-gray-500', 'border', 'border-pink-100'];
+
+            if (section === 'catalogo') {
+                secVentas.classList.add('hidden');
+                secCatalogo.classList.remove('hidden');
+                navCatalogo.classList.add(...activeClasses);
+                navCatalogo.classList.remove(...inactiveClasses);
+                navVentas.classList.remove(...activeClasses);
+                navVentas.classList.add(...inactiveClasses);
+                fetchCatalog();
+            } else {
+                secCatalogo.classList.add('hidden');
+                secVentas.classList.remove('hidden');
+                navVentas.classList.add(...activeClasses);
+                navVentas.classList.remove(...inactiveClasses);
+                navCatalogo.classList.remove(...activeClasses);
+                navCatalogo.classList.add(...inactiveClasses);
+            }
+        }
+
         function handleLogout() {
             localStorage.removeItem('ideastore_authenticated');
             document.getElementById('app-container').classList.add('hidden');
@@ -276,6 +370,7 @@
             document.getElementById('report-end').value = todayStr;
             document.getElementById('current-date-badge').innerText = formatDate(todayStr);
             await fetchSales();
+            await fetchCatalog();
         }
 
         async function fetchSales() {
@@ -291,6 +386,105 @@
                 renderSales();
             }
         }
+
+        // ===== CATÁLOGO DE PRODUCTOS =====
+
+        async function fetchCatalog() {
+            const { data, error } = await supabaseClient
+                .from('productos')
+                .select('*')
+                .order('nombre', { ascending: true });
+
+            if (error) {
+                console.error("Error leyendo catálogo:", error);
+            } else {
+                catalogList = data || [];
+                renderCatalog();
+                updateProductSuggestions();
+            }
+        }
+
+        function renderCatalog() {
+            const tableBody = document.getElementById('catalog-tbody');
+            const noCatalogMsg = document.getElementById('no-catalog-message');
+            if (!tableBody) return;
+
+            tableBody.innerHTML = '';
+
+            if (catalogList.length === 0) {
+                noCatalogMsg.classList.remove('hidden');
+            } else {
+                noCatalogMsg.classList.add('hidden');
+                catalogList.forEach(producto => {
+                    const row = `
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm">${producto.nombre}</td>
+                            <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm font-semibold text-gray-700">Gs. ${producto.precio.toLocaleString('es-PY')}</td>
+                            <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm text-center">
+                                <button onclick="editProduct('${producto.id}')" class="text-gray-400 hover:text-rosa-viejo transition-colors cursor-pointer mr-3">✏️</button>
+                                <button onclick="deleteProduct('${producto.id}')" class="text-gray-400 hover:text-red-500 transition-colors cursor-pointer">🗑️</button>
+                            </td>
+                        </tr>
+                    `;
+                    tableBody.insertAdjacentHTML('beforeend', row);
+                });
+            }
+        }
+
+        function updateProductSuggestions() {
+            const datalist = document.getElementById('productos-datalist');
+            if (!datalist) return;
+            datalist.innerHTML = '';
+            catalogList.forEach(producto => {
+                const option = document.createElement('option');
+                option.value = producto.nombre;
+                datalist.appendChild(option);
+            });
+        }
+
+        document.getElementById('catalog-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const nombre = document.getElementById('catalog-name').value.trim();
+            const precio = Math.round(parseFloat(document.getElementById('catalog-price').value));
+            await addProduct(nombre, precio);
+            document.getElementById('catalog-name').value = '';
+            document.getElementById('catalog-price').value = '';
+        });
+
+        async function addProduct(nombre, precio) {
+            const { error } = await supabaseClient.from('productos').insert([{ nombre, precio }]);
+            if (error) {
+                alert("❌ No se pudo guardar el producto: " + error.message);
+            } else {
+                await fetchCatalog();
+            }
+        }
+
+        async function editProduct(id) {
+            const producto = catalogList.find(p => String(p.id) === String(id));
+            if (!producto) return;
+            const nuevoPrecio = prompt(`Nuevo precio para "${producto.nombre}" (Gs.):`, producto.precio);
+            if (nuevoPrecio === null) return;
+            const precio = Math.round(parseFloat(nuevoPrecio));
+            if (isNaN(precio)) return;
+            const { error } = await supabaseClient.from('productos').update({ precio }).eq('id', id);
+            if (!error) await fetchCatalog();
+        }
+
+        async function deleteProduct(id) {
+            if (!confirm('¿Eliminar este producto del catálogo?')) return;
+            const { error } = await supabaseClient.from('productos').delete().eq('id', id);
+            if (!error) await fetchCatalog();
+        }
+
+        // Autocompletar el precio al elegir un producto del catálogo en el formulario de venta
+        document.getElementById('product-name-v2').addEventListener('input', (e) => {
+            const nombreIngresado = e.target.value.trim().toLowerCase();
+            const producto = catalogList.find(p => p.nombre.toLowerCase() === nombreIngresado);
+            if (producto) {
+                document.getElementById('product-price').value = producto.precio;
+            }
+        });
 
         function formatDate(dateString) {
             const options = { year: 'numeric', month: 'short', day: 'numeric' };
@@ -428,6 +622,23 @@ async function generatePDFReport() {
 
     if (error || !data || data.length === 0) { alert("No hay ventas para este periodo."); return; }
 
+    // --- Agrupar ventas por producto: sumar cantidad y total ---
+    const resumenPorProducto = {};
+    data.forEach(s => {
+        const nombre = s.name;
+        const cantidad = s.quantity || 1;
+        if (!resumenPorProducto[nombre]) {
+            resumenPorProducto[nombre] = { cantidad: 0, total: 0 };
+        }
+        resumenPorProducto[nombre].cantidad += cantidad;
+        resumenPorProducto[nombre].total += s.price;
+    });
+
+    // Ordenar alfabéticamente por nombre de producto
+    const filas = Object.entries(resumenPorProducto)
+        .map(([nombre, valores]) => ({ nombre, ...valores }))
+        .sort((a, b) => a.nombre.localeCompare(b.nombre));
+
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
@@ -444,12 +655,12 @@ async function generatePDFReport() {
     doc.setTextColor(...darkGray);
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
-    doc.text(`Reporte detallado: ${startDate} al ${endDate}`, 20, 28);
+    doc.text(`Reporte resumido por producto: ${startDate} al ${endDate}`, 20, 28);
     
     doc.setDrawColor(220, 220, 220);
     doc.line(20, 35, 190, 35);
 
-    // --- Tabla (Nueva estructura con Fecha) ---
+    // --- Tabla (Resumen agrupado por producto) ---
     let y = 45;
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
@@ -457,7 +668,6 @@ async function generatePDFReport() {
     
     // Encabezados ajustados
     doc.text("PRODUCTO", 20, y);
-    doc.text("FECHA", 100, y);
     doc.text("CANT.", 140, y);
     doc.text("TOTAL (Gs.)", 185, y, { align: 'right' });
     
@@ -469,16 +679,17 @@ async function generatePDFReport() {
     doc.setTextColor(...darkGray);
     
     let grandTotal = 0;
+    let grandQuantity = 0;
     
-    data.forEach(s => {
+    filas.forEach(f => {
         if (y > 270) { doc.addPage(); y = 20; }
         
-        doc.text(s.name, 20, y);
-        doc.text(s.date, 100, y); // Columna Fecha añadida
-        doc.text((s.quantity || 1).toString(), 145, y); // Columna Cantidad
-        doc.text(s.price.toLocaleString('es-PY'), 185, y, { align: 'right' }); // Columna Total
+        doc.text(f.nombre, 20, y);
+        doc.text(f.cantidad.toString(), 145, y); // Cantidad total vendida del producto en el periodo
+        doc.text(f.total.toLocaleString('es-PY'), 185, y, { align: 'right' }); // Total del producto
         
-        grandTotal += s.price;
+        grandTotal += f.total;
+        grandQuantity += f.cantidad;
         y += 8;
     });
 
@@ -487,7 +698,7 @@ async function generatePDFReport() {
     doc.line(130, y, 190, y);
     y += 8;
     doc.setFont("helvetica", "bold");
-    doc.text("TOTAL GENERAL:", 150, y, { align: 'right' });
+    doc.text(`TOTAL GENERAL (${grandQuantity} unid.):`, 150, y, { align: 'right' });
     doc.setTextColor(...primaryColor);
     doc.text(`Gs. ${grandTotal.toLocaleString('es-PY')}`, 185, y, { align: 'right' });
 
