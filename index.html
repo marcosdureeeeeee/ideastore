@@ -553,7 +553,7 @@ async function editProduct(id) {
     const producto = catalogList.find(p => String(p.id) === String(id));
     if (!producto) return;
     // 2. Pedimos los nuevos datos (con los actuales como valor por defecto)
-    const nuevoNombre = prompt("Editando producto:", producto.nombre);
+    const nuevoNombre = prompt("Editando Producto / Nuevo Nombre:", producto.nombre);
     // Si el usuario cancela (null) o deja vacío, no hacemos nada
     if (nuevoNombre === null) return; 
     const nuevoPrecio = prompt("Nuevo precio (Gs.):", producto.precio);
