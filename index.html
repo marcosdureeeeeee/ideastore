@@ -40,46 +40,47 @@
 </nav>
 
 <div id="section-dashboard">
-    <div id="app-container" class="max-w-6xl w-full mx-auto hidden">
-        <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 bg-white p-6 rounded-2xl shadow-xs border border-pink-100">
-            <div>
-                <h1 class="text-2xl font-bold text-rosa-viejo">✨ IDEAStore App</h1>
-                <p class="text-sm text-gray-400">Administración de la librería</p>
-            </div>
-            <button onclick="handleLogout()" class="text-xs bg-gray-100 px-3 py-2 rounded-xl">Salir 🚪</button>
-        </header>
-        
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            </div>
-    </div>
-</div>
-<div id="section-catalogo" class="hidden space-y-6">
-    <div class="card-ui p-6">
-        <h2 class="text-lg font-bold mb-4">➕ Agregar Producto</h2>
-        <form id="add-prod-form" class="flex gap-3">
-            <input type="text" id="new-name" placeholder="Nombre" class="w-full px-4 py-2 border rounded-xl outline-none focus:border-rosa-viejo">
-            <input type="number" id="new-price" placeholder="Precio" class="w-32 px-4 py-2 border rounded-xl outline-none focus:border-rosa-viejo">
-            <button type="submit" class="bg-rosa-viejo text-white px-6 rounded-xl">Guardar</button>
-        </form>
+        <div id="app-container" class="max-w-6xl w-full mx-auto hidden">
+            <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 bg-white p-6 rounded-2xl shadow-xs border border-pink-100">
+                <div>
+                    <h1 class="text-2xl font-bold text-[#B57C80]">✨ IDEAStore App</h1>
+                    <p class="text-sm text-gray-400">Administración de la librería</p>
+                </div>
+                <button onclick="handleLogout()" class="text-xs bg-gray-100 px-3 py-2 rounded-xl">Salir 🚪</button>
+            </header>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                </div>
+        </div>
     </div>
 
-    <div class="card-ui p-6">
-        <h2 class="text-lg font-bold mb-4">📚 Lista de Precios</h2>
-        <table class="w-full text-left" id="products-table">
-            <thead class="text-gray-400 text-xs uppercase"><tr><th class="pb-3">Nombre</th><th class="pb-3">Precio</th><th class="pb-3 text-center">Acción</th></tr></thead>
-            <tbody id="products-tbody" class="divide-y divide-gray-50"></tbody>
-        </table>
+    <div id="section-catalogo" class="hidden max-w-6xl mx-auto space-y-6">
+        <div class="card-ui p-6">
+            <h2 class="text-lg font-bold mb-4">➕ Agregar Producto</h2>
+            <form id="add-prod-form" class="flex gap-3">
+                <input type="text" id="new-name" placeholder="Nombre" class="w-full px-4 py-2 border rounded-xl outline-none focus:border-[#B57C80]">
+                <input type="number" id="new-price" placeholder="Precio" class="w-32 px-4 py-2 border rounded-xl outline-none focus:border-[#B57C80]">
+                <button type="submit" class="bg-[#B57C80] text-white px-6 rounded-xl">Guardar</button>
+            </form>
+        </div>
+        <div class="card-ui p-6">
+            <h2 class="text-lg font-bold mb-4">📚 Lista de Precios</h2>
+            <table class="w-full text-left" id="products-table">
+                <thead class="text-gray-400 text-xs uppercase"><tr><th class="pb-3">Nombre</th><th class="pb-3">Precio</th><th class="pb-3 text-center">Acción</th></tr></thead>
+                <tbody id="products-tbody" class="divide-y divide-gray-50"></tbody>
+            </table>
+        </div>
     </div>
-</div>
-    <div id="login-container" class="fixed inset-0 flex items-center justify-center bg-[#FBF6F6] p-4 z-50">
+<div id="login-container" class="fixed inset-0 flex items-center justify-center bg-[#FBF6F6] p-4 z-50">
         <div class="max-w-md w-full bg-white p-8 rounded-3xl shadow-xs border border-pink-100">
-            <div class="text-center mb-6">
-                <div class="w-16 h-16 flex items-center justify-center rounded-2xl mx-auto mb-4 overflow-hidden p-2">
-                    <img src="icon-192.png" alt="Logo IDEAStore" class="w-full h-full object-contain">
-                </div>
-                <h2 class="text-2xl font-bold text-gray-800">IDEAStore App</h2>
-                <p class="text-sm text-gray-400 mt-1">Ingresá tus datos para iniciar sesión</p>
-            </div>
+            <h2 class="text-2xl font-bold text-gray-800 text-center mb-6">IDEAStore App</h2>
+            <form id="login-form" class="space-y-4" onsubmit="handleLogin(event)">
+                <input type="text" id="login-user" required placeholder="Usuario" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm">
+                <input type="password" id="login-pass" required placeholder="Contraseña" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm">
+                <div id="login-error" class="text-xs text-red-500 hidden font-medium">❌ Datos incorrectos.</div>
+                <button type="submit" class="w-full bg-[#B57C80] text-white py-3 rounded-xl text-sm">Iniciar Sesión</button>
+            </form>
+        </div>
+    </div>
 
             <form id="login-form" class="space-y-4" onsubmit="handleLogin(event)">
                 <div>
@@ -287,26 +288,18 @@
         });
 
 function handleLogin(e) {
-    e.preventDefault();
-    const user = document.getElementById('login-user').value.trim();
-    const pass = document.getElementById('login-pass').value.trim();
-    const errorMsg = document.getElementById('login-error');
-    
-    if (user === 'Raquel' && pass === '615065') {
-        errorMsg.classList.add('hidden');
-        localStorage.setItem('ideastore_authenticated', 'true');
-        
-        // 1. Ocultamos el login
-        document.getElementById('login-container').classList.add('hidden');
-        
-        // 2. MOSTRAMOS EL CONTENEDOR DE VENTAS
-        document.getElementById('app-container').classList.remove('hidden');
-        
-        initApp();
-    } else {
-        errorMsg.classList.remove('hidden');
-    }
-}
+            e.preventDefault();
+            const user = document.getElementById('login-user').value.trim();
+            const pass = document.getElementById('login-pass').value.trim();
+            if (user === 'Raquel' && pass === '615065') {
+                localStorage.setItem('ideastore_authenticated', 'true');
+                document.getElementById('login-container').classList.add('hidden');
+                document.getElementById('app-container').classList.remove('hidden');
+                initApp();
+            } else {
+                document.getElementById('login-error').classList.remove('hidden');
+            }
+        }
         function handleLogout() {
             localStorage.removeItem('ideastore_authenticated');
             document.getElementById('app-container').classList.add('hidden');
@@ -334,6 +327,12 @@ async function initApp() {
     await initProductSelect();
     document.getElementById('product-date').value = new Date().toISOString().split('T')[0];
 }
+        window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('ideastore_authenticated') === 'true') {
+                document.getElementById('login-container').classList.add('hidden');
+                document.getElementById('app-container').classList.remove('hidden');
+            }
+        });
 
     // --- EVENTO SUBMIT VENTA ---
     document.getElementById('sales-form').addEventListener('submit', async (e) => {
@@ -586,24 +585,24 @@ async function generatePDFReport() {
         });
         // Cambiar entre pestañas
 function showSection(section) {
-        const dash = document.getElementById('section-dashboard');
-        const cat = document.getElementById('section-catalogo');
-        const btnDash = document.getElementById('btn-dashboard');
-        const btnCat = document.getElementById('btn-catalogo');
+            const dash = document.getElementById('section-dashboard');
+            const cat = document.getElementById('section-catalogo');
+            const btnDash = document.getElementById('btn-dashboard');
+            const btnCat = document.getElementById('btn-catalogo');
 
-        if (section === 'dashboard') {
-            dash.classList.remove('hidden');
-            cat.classList.add('hidden');
-            btnDash.className = 'flex-1 py-2 rounded-xl bg-rosa-viejo text-white font-medium';
-            btnCat.className = 'flex-1 py-2 rounded-xl text-gray-500';
-        } else {
-            dash.classList.add('hidden');
-            cat.classList.remove('hidden');
-            btnDash.className = 'flex-1 py-2 rounded-xl text-gray-500';
-            btnCat.className = 'flex-1 py-2 rounded-xl bg-rosa-viejo text-white font-medium';
-            loadCatalog();
+            if (section === 'dashboard') {
+                dash.classList.remove('hidden');
+                cat.classList.add('hidden');
+                btnDash.className = 'flex-1 py-2 rounded-xl bg-[#B57C80] text-white font-medium';
+                btnCat.className = 'flex-1 py-2 rounded-xl text-gray-500';
+            } else {
+                dash.classList.add('hidden');
+                cat.classList.remove('hidden');
+                btnDash.className = 'flex-1 py-2 rounded-xl text-gray-500';
+                btnCat.className = 'flex-1 py-2 rounded-xl bg-[#B57C80] text-white font-medium';
+                loadCatalog();
+            }
         }
-    }
 // Cargar catálogo desde Supabase
 async function loadCatalog() {
         const { data, error } = await supabaseClient.from('productos').select('*');
