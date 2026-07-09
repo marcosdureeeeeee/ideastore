@@ -39,20 +39,6 @@
     <button onclick="showSection('catalogo')" id="btn-catalogo" class="flex-1 py-2 rounded-xl text-gray-500">Catálogo</button>
 </nav>
 
-<div id="section-dashboard">
-        <div id="app-container" class="max-w-6xl w-full mx-auto hidden">
-            <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 bg-white p-6 rounded-2xl shadow-xs border border-pink-100">
-                <div>
-                    <h1 class="text-2xl font-bold text-[#B57C80]">✨ IDEAStore App</h1>
-                    <p class="text-sm text-gray-400">Administración de la librería</p>
-                </div>
-                <button onclick="handleLogout()" class="text-xs bg-gray-100 px-3 py-2 rounded-xl">Salir 🚪</button>
-            </header>
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                </div>
-        </div>
-    </div>
-
     <div id="section-catalogo" class="hidden max-w-6xl mx-auto space-y-6">
         <div class="card-ui p-6">
             <h2 class="text-lg font-bold mb-4">➕ Agregar Producto</h2>
@@ -68,17 +54,6 @@
                 <thead class="text-gray-400 text-xs uppercase"><tr><th class="pb-3">Nombre</th><th class="pb-3">Precio</th><th class="pb-3 text-center">Acción</th></tr></thead>
                 <tbody id="products-tbody" class="divide-y divide-gray-50"></tbody>
             </table>
-        </div>
-    </div>
-<div id="login-container" class="fixed inset-0 flex items-center justify-center bg-[#FBF6F6] p-4 z-50">
-        <div class="max-w-md w-full bg-white p-8 rounded-3xl shadow-xs border border-pink-100">
-            <h2 class="text-2xl font-bold text-gray-800 text-center mb-6">IDEAStore App</h2>
-            <form id="login-form" class="space-y-4" onsubmit="handleLogin(event)">
-                <input type="text" id="login-user" required placeholder="Usuario" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm">
-                <input type="password" id="login-pass" required placeholder="Contraseña" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm">
-                <div id="login-error" class="text-xs text-red-500 hidden font-medium">❌ Datos incorrectos.</div>
-                <button type="submit" class="w-full bg-[#B57C80] text-white py-3 rounded-xl text-sm">Iniciar Sesión</button>
-            </form>
         </div>
     </div>
 
@@ -426,20 +401,6 @@ async function initApp() {
             document.getElementById('product-quantity').value = '1';
         });
 
-        async function addSale(name, price, quantity, date) {
-            const nuevaVenta = { name: name, price: price, quantity: quantity, date: date };
-            if (navigator.onLine) {
-                const { error } = await supabaseClient.from('sales').insert([nuevaVenta]);
-                if (error) {
-                    guardarEnColaOffline(nuevaVenta);
-                } else {
-                    await fetchSales();
-                }
-            } else {
-                guardarEnColaOffline(nuevaVenta);
-                alert("⚠️ Sin internet. La venta se guardó de forma local.");
-            }
-        }
 
         function guardarEnColaOffline(venta) {
             let cola = JSON.parse(localStorage.getItem('ideastore_cola_offline')) || [];
