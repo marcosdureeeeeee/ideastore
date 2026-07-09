@@ -383,6 +383,11 @@ function iniciarSesionExitoso() {
         // Buscamos todos los botones que tengan una clase 'admin-only' y los ocultamos
         const botonesAdmin = document.querySelectorAll('.admin-only');
         botonesAdmin.forEach(btn => btn.style.display = 'none');
+    } else {
+        // --- AGREGÁ ESTO ---
+        // Si ES admin, nos aseguramos de que el botón se vea
+        const botonesAdmin = document.querySelectorAll('.admin-only');
+        botonesAdmin.forEach(btn => btn.style.display = 'block'); // O 'inline-block', según tu diseño
     }
 }
 
