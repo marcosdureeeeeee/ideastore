@@ -569,27 +569,48 @@ async function generatePDFReport() {
         });
         // Cambiar entre pestañas
 function showSection(section) {
-    document.getElementById('section-dashboard').classList.toggle('hidden', section !== 'dashboard');
-    document.getElementById('section-catalogo').classList.toggle('hidden', section !== 'catalogo');
-    
-    // Cambiar estilos de los botones
-    document.getElementById('btn-dashboard').className = section === 'dashboard' ? 'flex-1 py-2 rounded-xl bg-rosa-viejo text-white' : 'flex-1 py-2 rounded-xl text-gray-500';
-    document.getElementById('btn-catalogo').className = section === 'catalogo' ? 'flex-1 py-2 rounded-xl bg-rosa-viejo text-white' : 'flex-1 py-2 rounded-xl text-gray-500';
-    
-    if(section === 'catalogo') loadCatalog();
-}
+    const dash = document.getElementById('section-dashboard');
+    const cat = document.getElementById('section-catalogo');
+    const btnDash = document.getElementById('btn-dashboard');
+    const btnCat = document.getElementById('btn-catalogo');
 
+    if (section === 'dashboard') {
+        dash.classList.remove('hidden');
+        cat.classList.add('hidden');
+        btnDash.className = 'flex-1 py-2 rounded-xl bg-rosa-viejo text-white font-medium';
+        btnCat.className = 'flex-1 py-2 rounded-xl text-gray-500';
+    } else {
+        dash.classList.add('hidden');
+        cat.classList.remove('hidden');
+        btnDash.className = 'flex-1 py-2 rounded-xl text-gray-500';
+        btnCat.className = 'flex-1 py-2 rounded-xl bg-rosa-viejo text-white font-medium';
+        loadCatalog(); // Esto carga los productos al entrar
+    }
+}
 // Cargar catálogo desde Supabase
 async function loadCatalog() {
-    const { data } = await supabaseClient.from('productos').select('*');
+    const { data, error } = await supabaseClient.from('productos').select('*');
+    if (error) {
+        console.error("Error al cargar catálogo:", error);
+        return;
+    }
+    
     const tbody = document.getElementById('products-tbody');
     tbody.innerHTML = '';
+    
+    if (!data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" class="text-center py-4 text-gray-400">No hay productos aún.</td></tr>';
+        return;
+    }
+
     data.forEach(p => {
         tbody.innerHTML += `
-            <tr class="text-sm">
+            <tr class="text-sm border-b">
                 <td class="py-3">${p.nombre}</td>
                 <td class="py-3">Gs. ${p.precio.toLocaleString()}</td>
-                <td class="py-3 text-center"><button onclick="deleteProd('${p.id}')" class="text-red-400 hover:text-red-600">🗑️</button></td>
+                <td class="py-3 text-center">
+                    <button onclick="deleteProd('${p.id}')" class="text-red-400 hover:text-red-600">🗑️</button>
+                </td>
             </tr>
         `;
     });
