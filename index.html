@@ -286,23 +286,27 @@
             }
         });
 
-        function handleLogin(e) {
-            e.preventDefault();
-            const user = document.getElementById('login-user').value.trim();
-            const pass = document.getElementById('login-pass').value.trim();
-            const errorMsg = document.getElementById('login-error');
-            
-            if (user === 'Raquel' && pass === '615065') {
-                errorMsg.classList.add('hidden');
-                localStorage.setItem('ideastore_authenticated', 'true');
-                document.getElementById('login-container').classList.add('hidden');
-                document.getElementById('app-container').classList.remove('hidden');
-                initApp();
-            } else {
-                errorMsg.classList.remove('hidden');
-            }
-        }
-
+function handleLogin(e) {
+    e.preventDefault();
+    const user = document.getElementById('login-user').value.trim();
+    const pass = document.getElementById('login-pass').value.trim();
+    const errorMsg = document.getElementById('login-error');
+    
+    if (user === 'Raquel' && pass === '615065') {
+        errorMsg.classList.add('hidden');
+        localStorage.setItem('ideastore_authenticated', 'true');
+        
+        // 1. Ocultamos el login
+        document.getElementById('login-container').classList.add('hidden');
+        
+        // 2. MOSTRAMOS EL CONTENEDOR DE VENTAS
+        document.getElementById('app-container').classList.remove('hidden');
+        
+        initApp();
+    } else {
+        errorMsg.classList.remove('hidden');
+    }
+}
         function handleLogout() {
             localStorage.removeItem('ideastore_authenticated');
             document.getElementById('app-container').classList.add('hidden');
@@ -323,11 +327,13 @@ async function initProductSelect() {
         const prod = window.productosCatalogo.find(p => p.id == e.target.value);
         document.getElementById('product-price').value = prod ? prod.precio : '';
     });
-    async function initApp() {
-        await fetchSales();
-        await initProductSelect();
-        document.getElementById('product-date').value = new Date().toISOString().split('T')[0];
-    }
+// Asegúrate de que esta función tenga esta línea
+async function initApp() {
+    document.getElementById('app-container').classList.remove('hidden'); // <--- AGREGA ESTO
+    await fetchSales();
+    await initProductSelect();
+    document.getElementById('product-date').value = new Date().toISOString().split('T')[0];
+}
 
     // --- EVENTO SUBMIT VENTA ---
     document.getElementById('sales-form').addEventListener('submit', async (e) => {
