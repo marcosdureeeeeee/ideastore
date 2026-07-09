@@ -34,7 +34,32 @@
     </style>
 </head>
 <body class="p-4 md:p-8 text-gray-700 min-h-screen">
+<nav class="flex gap-2 mb-6 bg-white p-2 rounded-2xl border border-gray-100 shadow-sm">
+    <button onclick="showSection('dashboard')" id="btn-dashboard" class="flex-1 py-2 rounded-xl bg-rosa-viejo text-white font-medium">Dashboard</button>
+    <button onclick="showSection('catalogo')" id="btn-catalogo" class="flex-1 py-2 rounded-xl text-gray-500">Catálogo</button>
+</nav>
 
+<div id="section-dashboard">
+    </div>
+
+<div id="section-catalogo" class="hidden space-y-6">
+    <div class="card-ui p-6">
+        <h2 class="text-lg font-bold mb-4">➕ Agregar Producto</h2>
+        <form id="add-prod-form" class="flex gap-3">
+            <input type="text" id="new-name" placeholder="Nombre" class="w-full px-4 py-2 border rounded-xl outline-none focus:border-rosa-viejo">
+            <input type="number" id="new-price" placeholder="Precio" class="w-32 px-4 py-2 border rounded-xl outline-none focus:border-rosa-viejo">
+            <button type="submit" class="bg-rosa-viejo text-white px-6 rounded-xl">Guardar</button>
+        </form>
+    </div>
+
+    <div class="card-ui p-6">
+        <h2 class="text-lg font-bold mb-4">📚 Lista de Precios</h2>
+        <table class="w-full text-left" id="products-table">
+            <thead class="text-gray-400 text-xs uppercase"><tr><th class="pb-3">Nombre</th><th class="pb-3">Precio</th><th class="pb-3 text-center">Acción</th></tr></thead>
+            <tbody id="products-tbody" class="divide-y divide-gray-50"></tbody>
+        </table>
+    </div>
+</div>
     <div id="login-container" class="fixed inset-0 flex items-center justify-center bg-[#FBF6F6] p-4 z-50">
         <div class="max-w-md w-full bg-white p-8 rounded-3xl shadow-xs border border-pink-100">
             <div class="text-center mb-6">
@@ -92,35 +117,39 @@
                         📦 Cargar Producto
                     </h2>
                     
-                    <form id="sales-form" class="space-y-4">
-                        <div class="mb-4">
-                            <label for="product-name-v2" class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">NOMBRE DEL PRODUCTO</label>
-                            <input type="text" id="product-name-v2" name="product-name-v2" placeholder="Ej: Lápiz, Cuaderno..." required
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500">
-                        </div>
-                        <div class="mb-4">
-                            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Cantidad</label>
-                            <input type="number" id="product-quantity" value="1" min="1" required
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Precio Unitario (Gs.)</label>
-                            <div class="relative">
-                                <span class="absolute left-4 top-2.5 text-gray-400 text-sm">Gs.</span>
-                                <input type="number" id="product-price" required min="0" step="50" placeholder="0" 
-                                    class="w-full pl-12 pr-4 py-2.5 rounded-xl border border-gray-200 outline-none focus:border-[#B57C80] focus:ring-2 focus:ring-[#E2C2C4] transition-all text-sm">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Fecha de Venta</label>
-                            <input type="date" id="product-date" required
-                                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 outline-none focus:border-[#B57C80] focus:ring-2 focus:ring-[#E2C2C4] transition-all text-sm text-gray-600">
-                        </div>
-                        <button type="submit" 
-                            class="w-full bg-rosa-viejo text-white font-medium py-3 rounded-xl hover:bg-[#8C5256] transition-colors cursor-pointer shadow-xs text-sm mt-2">
-                            ➕ Registrar Venta
-                        </button>
-                    </form>
+<form id="sales-form" class="space-y-4">
+    <div class="mb-4">
+        <label for="product-select" class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">PRODUCTO</label>
+        <select id="product-select" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500">
+            <option value="">Seleccione un producto...</option>
+        </select>
+    </div>
+    
+    <div class="mb-4">
+        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Cantidad</label>
+        <input type="number" id="product-quantity" value="1" min="1" required
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500">
+    </div>
+    
+    <div>
+        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Precio Unitario (Gs.)</label>
+        <div class="relative">
+            <span class="absolute left-4 top-2.5 text-gray-400 text-sm">Gs.</span>
+            <input type="number" id="product-price" required readonly placeholder="0" 
+                class="w-full pl-12 pr-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm">
+        </div>
+    </div>
+    
+    <div>
+        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Fecha de Venta</label>
+        <input type="date" id="product-date" required
+            class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-600">
+    </div>
+    
+    <button type="submit" class="w-full bg-rosa-viejo text-white font-medium py-3 rounded-xl hover:bg-[#8C5256] transition-colors cursor-pointer shadow-xs text-sm mt-2">
+        ➕ Registrar Venta
+    </button>
+</form>
                 </div>
 
                 <div class="bg-white p-6 rounded-2xl shadow-xs border border-pink-100">
@@ -227,7 +256,8 @@
         const SUPABASE_URL = "https://ivhkxgxixdshhzxxhhur.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_zSnb4yNKXCo1ZBZ-38vIvw_pEib7vGS";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
+        window.productosCatalogo = [];
+        
         function getLocalDateString() {
             const now = new Date();
             const year = now.getFullYear();
@@ -268,16 +298,39 @@
             document.getElementById('login-container').classList.remove('hidden');
             document.getElementById('login-pass').value = '';
         }
+async function initProductSelect() {
+        const { data } = await supabaseClient.from('productos').select('*');
+        window.productosCatalogo = data || [];
+        const select = document.getElementById('product-select');
+        select.innerHTML = '<option value="">Seleccione un producto...</option>';
+        data.forEach(p => {
+            select.innerHTML += `<option value="${p.id}">${p.nombre}</option>`;
+        });
+    }
 
-        async function initApp() {
-            const todayStr = getLocalDateString();
-            document.getElementById('product-date').value = todayStr;
-            document.getElementById('report-start').value = todayStr;
-            document.getElementById('report-end').value = todayStr;
-            document.getElementById('current-date-badge').innerText = formatDate(todayStr);
-            await fetchSales();
-        }
+    document.getElementById('product-select').addEventListener('change', (e) => {
+        const prod = window.productosCatalogo.find(p => p.id == e.target.value);
+        document.getElementById('product-price').value = prod ? prod.precio : '';
+    });
+    async function initApp() {
+        await fetchSales();
+        await initProductSelect();
+        document.getElementById('product-date').value = new Date().toISOString().split('T')[0];
+    }
 
+    // --- EVENTO SUBMIT VENTA ---
+    document.getElementById('sales-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const select = document.getElementById('product-select');
+        const name = select.options[select.selectedIndex].text;
+        const unitPrice = parseInt(document.getElementById('product-price').value);
+        const quantity = parseInt(document.getElementById('product-quantity').value);
+        const date = document.getElementById('product-date').value;
+        
+        await addSale(name, unitPrice * quantity, quantity, date);
+        select.value = '';
+        document.getElementById('product-price').value = '';
+    });
         async function fetchSales() {
             const { data, error } = await supabaseClient
                 .from('sales')
@@ -514,6 +567,51 @@ async function generatePDFReport() {
                 });
             }
         });
+        // Cambiar entre pestañas
+function showSection(section) {
+    document.getElementById('section-dashboard').classList.toggle('hidden', section !== 'dashboard');
+    document.getElementById('section-catalogo').classList.toggle('hidden', section !== 'catalogo');
+    
+    // Cambiar estilos de los botones
+    document.getElementById('btn-dashboard').className = section === 'dashboard' ? 'flex-1 py-2 rounded-xl bg-rosa-viejo text-white' : 'flex-1 py-2 rounded-xl text-gray-500';
+    document.getElementById('btn-catalogo').className = section === 'catalogo' ? 'flex-1 py-2 rounded-xl bg-rosa-viejo text-white' : 'flex-1 py-2 rounded-xl text-gray-500';
+    
+    if(section === 'catalogo') loadCatalog();
+}
+
+// Cargar catálogo desde Supabase
+async function loadCatalog() {
+    const { data } = await supabaseClient.from('productos').select('*');
+    const tbody = document.getElementById('products-tbody');
+    tbody.innerHTML = '';
+    data.forEach(p => {
+        tbody.innerHTML += `
+            <tr class="text-sm">
+                <td class="py-3">${p.nombre}</td>
+                <td class="py-3">Gs. ${p.precio.toLocaleString()}</td>
+                <td class="py-3 text-center"><button onclick="deleteProd('${p.id}')" class="text-red-400 hover:text-red-600">🗑️</button></td>
+            </tr>
+        `;
+    });
+}
+
+// Guardar nuevo producto
+document.getElementById('add-prod-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('new-name').value;
+    const price = document.getElementById('new-price').value;
+    await supabaseClient.from('productos').insert([{ nombre: name, precio: price }]);
+    e.target.reset();
+    loadCatalog();
+});
+
+// Borrar producto
+async function deleteProd(id) {
+    if(confirm("¿Seguro que querés borrar este producto?")) {
+        await supabaseClient.from('productos').delete().eq('id', id);
+        loadCatalog();
+    }
+}
     </script>
 </body>
 </html>
