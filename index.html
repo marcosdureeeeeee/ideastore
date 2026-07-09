@@ -548,16 +548,32 @@ window.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        async function editProduct(id) {
-            const producto = catalogList.find(p => String(p.id) === String(id));
-            if (!producto) return;
-            const nuevoPrecio = prompt(`Nuevo precio para "${producto.nombre}" (Gs.):`, producto.precio);
-            if (nuevoPrecio === null) return;
-            const precio = Math.round(parseFloat(nuevoPrecio));
-            if (isNaN(precio)) return;
-            const { error } = await supabaseClient.from('productos').update({ precio }).eq('id', id);
-            if (!error) await fetchCatalog();
-        }
+async function editProduct(id) {
+    // 1. Buscamos el producto en tu lista actual
+    const producto = catalogList.find(p => String(p.id) === String(id));
+    if (!producto) return;
+    // 2. Pedimos los nuevos datos (con los actuales como valor por defecto)
+    const nuevoNombre = prompt("Editando producto:", producto.nombre);
+    // Si el usuario cancela (null) o deja vacío, no hacemos nada
+    if (nuevoNombre === null) return; 
+    const nuevoPrecio = prompt("Nuevo precio (Gs.):", producto.precio);
+    if (nuevoPrecio === null) return;
+    // 3. Enviamos el update a Supabase con ambos campos
+    const { error } = await supabaseClient
+        .from('productos')
+        .update({ 
+            nombre: nuevoNombre, 
+            precio: parseInt(nuevoPrecio) 
+        })
+        .eq('id', id);
+
+    if (error) {
+        alert("Error al actualizar: " + error.message);
+    } else {
+        alert("¡Producto actualizado!");
+        await fetchCatalog(); // Recargamos la tabla para que se vean los cambios
+    }
+}
 
         async function deleteProduct(id) {
             if (!confirm('¿Eliminar este producto del catálogo?')) return;
