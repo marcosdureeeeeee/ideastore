@@ -92,6 +92,9 @@
             <button id="nav-catalogo" onclick="showSection('catalogo')" class="px-4 py-2 rounded-xl text-sm font-semibold transition-colors cursor-pointer bg-white text-gray-500 border border-pink-100 hover:bg-rosa-viejo-soft">
                 🗂️ Catálogo
             </button>
+            <button id="nav-perfil" onclick="showSection('perfil')" class="px-4 py-2 rounded-xl text-sm font-semibold transition-colors cursor-pointer bg-white text-gray-500 border border-pink-100 hover:bg-rosa-viejo-soft">
+    👤 Perfil
+</button>
         </div>
 
         <div id="section-ventas">
@@ -286,6 +289,29 @@
                 </div>
             </div>
         </div>
+        <div id="section-perfil" class="hidden bg-white p-8 rounded-2xl shadow-xs border border-pink-100 max-w-lg mx-auto">
+    <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">👤 Mi Perfil</h2>
+    <div class="space-y-4">
+        <div class="bg-rosa-viejo-soft p-4 rounded-xl">
+            <p class="text-sm text-gray-500">Usuario actual:</p>
+            <p id="profile-user" class="font-bold text-rosa-viejo text-lg"></p>
+        </div>
+        <div class="bg-gray-50 p-4 rounded-xl">
+            <p class="text-sm text-gray-500">Rol asignado:</p>
+            <p id="profile-role" class="font-bold text-gray-700"></p>
+        </div>
+        <hr class="my-4">
+        <div>
+            <label class="block text-xs font-semibold uppercase text-gray-500 mb-2">Cambiar Contraseña</label>
+            <input type="password" id="new-password" placeholder="Nueva contraseña" 
+                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 mb-3 text-sm">
+            <button onclick="updatePassword()" 
+                class="w-full bg-rosa-viejo text-white font-medium py-2 rounded-xl hover:bg-[#8C5256] transition-colors cursor-pointer text-sm">
+                Guardar Nueva Contraseña
+            </button>
+        </div>
+    </div>
+</div>
     </div>
 
     <script>
