@@ -197,7 +197,7 @@
                 <div class="bg-white rounded-2xl shadow-xs border border-pink-100 overflow-hidden">
                     <div class="p-6 border-b border-gray-100 flex justify-between items-center">
                         <h3 class="font-bold text-gray-800 text-lg">📋 Registro de Ventas Completo</h3>
-                        <button onclick="clearAllSales()" class="text-xs text-red-400 hover:text-red-600 font-medium cursor-pointer">
+                        <button onclick="clearAllSales()" class="admin-only text-xs text-red-400 hover:text-red-600 font-medium cursor-pointer">
                             Limpiar Historial completo
                         </button>
                     </div>
@@ -313,22 +313,48 @@
             }
         });
 
-        function handleLogin(e) {
-            e.preventDefault();
-            const user = document.getElementById('login-user').value.trim();
-            const pass = document.getElementById('login-pass').value.trim();
-            const errorMsg = document.getElementById('login-error');
-            
-            if (user === 'Raquel' && pass === '615065') {
-                errorMsg.classList.add('hidden');
-                localStorage.setItem('ideastore_authenticated', 'true');
-                document.getElementById('login-container').classList.add('hidden');
-                document.getElementById('app-container').classList.remove('hidden');
-                initApp();
-            } else {
-                errorMsg.classList.remove('hidden');
-            }
-        }
+function handleLogin(e) {
+    e.preventDefault();
+    const user = document.getElementById('login-user').value.trim();
+    const pass = document.getElementById('login-pass').value.trim();
+    const errorMsg = document.getElementById('login-error');
+
+    // Definimos los usuarios permitidos
+    if (user === 'Raquel' && pass === '615065') {
+        localStorage.setItem('ideastore_authenticated', 'true');
+        localStorage.setItem('ideastore_role', 'user'); // Usuario normal
+        iniciarSesionExitoso();
+    } else if (user === 'Marcos' && pass === '8791') {
+        localStorage.setItem('ideastore_authenticated', 'true');
+        localStorage.setItem('ideastore_role', 'admin'); // Administrador
+        iniciarSesionExitoso();
+    } else {
+        errorMsg.classList.remove('hidden');
+    }
+}
+
+function iniciarSesionExitoso() {
+    document.getElementById('login-container').classList.add('hidden');
+    document.getElementById('app-container').classList.remove('hidden');
+    location.reload(); // Recargamos para que aplique los permisos
+}
+        function aplicarSeguridad() {
+    const rol = localStorage.getItem('ideastore_role');
+    
+    // Si NO es admin, ocultamos los botones de borrar
+    if (rol !== 'admin') {
+        // Buscamos todos los botones que tengan una clase 'admin-only' y los ocultamos
+        const botonesAdmin = document.querySelectorAll('.admin-only');
+        botonesAdmin.forEach(btn => btn.style.display = 'none');
+    }
+}
+
+// Ejecutamos esto siempre que cargue la app
+window.addEventListener('DOMContentLoaded', () => {
+    if(localStorage.getItem('ideastore_authenticated') === 'true') {
+        aplicarSeguridad();
+    }
+});
 
         function showSection(section) {
             const secVentas = document.getElementById('section-ventas');
