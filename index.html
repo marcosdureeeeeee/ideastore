@@ -807,15 +807,22 @@ async function generatePDFReport() {
 async function updatePassword() {
     const newPass = document.getElementById('new-password').value;
     const user = localStorage.getItem('ideastore_user');
-    if (!newPass) return alert("Escribí una contraseña");
     
-    const { error } = await supabaseClient
+    if (!newPass) return alert("Escribí una contraseña nueva.");
+    if (!user) return alert("Error: No se detectó usuario logueado.");
+
+    console.log("Intentando actualizar a:", user, "con pass:", newPass); // Para ver en la consola (F12)
+
+    const { data, error } = await supabaseClient
         .from('credenciales')
         .update({ password: newPass })
         .eq('usuario', user);
         
-    if (error) alert("Error al cambiar: " + error.message);
-    else alert("¡Contraseña actualizada!");
+    if (error) {
+        alert("Error de Supabase: " + error.message);
+    } else {
+        alert("¡Contraseña actualizada correctamente!");
+    }
 }
     </script>
 </body>
